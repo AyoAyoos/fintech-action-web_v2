@@ -5,8 +5,6 @@ import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { z } from "zod";
 import {
-  Menu,
-  X,
   Phone,
   MessageCircle,
   MapPin,
@@ -29,8 +27,12 @@ import { fetchAllSettings, fetchGallery, fetchSettingSignedUrl } from "@/lib/sit
 import { supabase } from "@/integrations/supabase/client";
 import TextType from "../components/TextType";
 import CTAButton from "../components/CTAButton";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import Reveal from "@/components/Reveal";
+import { PHONE, WHATSAPP } from "@/lib/constants";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_layout/")({
   head: () => ({
     meta: [
       { title: "ExpertAction® — Price Action Trading Academy | Pune" },
@@ -40,129 +42,23 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-const NAV = [
-  { label: "Home", href: "#home" },
-  { label: "About", href: "#about" },
-  { label: "Courses", href: "#courses" },
-  { label: "Gallery", href: "#gallery" },
-  { label: "Contact", href: "#contact" },
-];
-
-const PHONE = "+918237220005";
-const PHONE_DISPLAY = "+91 82372 20005";
-const WHATSAPP = "https://wa.me/918237220005";
-
-function useSettings() {
-  const { data } = useQuery({ queryKey: ["all-settings"], queryFn: fetchAllSettings });
-  return (key: string, fallback: string) => data?.[key] ?? fallback;
-}
-
 function Home() {
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
-      <Navbar />
+    <>
       <Hero />
       <About />
       <Courses />
       <Gallery />
       <WhyUs />
       <Contact />
-      <Footer />
-    </div>
+    </>
   );
 }
 
-/* ------------------------- Navbar ------------------------- */
-function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  return (
-    <>
-      <motion.header
-        initial={{ y: -30, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-        className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-          scrolled
-            ? "bg-navy-deep/80 backdrop-blur-xl border-b border-white/10 py-3"
-            : "bg-transparent py-5"
-        }`}
-      >
-        <div className="mx-auto max-w-7xl px-5 flex items-center justify-between gap-4">
-        <a href="#home" className="flex items-center gap-2 shrink-0">
-  <img src="/edited_logo.png" alt="ExpertAction" className="h-9 w-auto" />
-</a>
-          <nav className="hidden lg:flex items-center gap-8">
-            {NAV.map((n) => (
-              <a key={n.href} href={n.href} className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors relative group">
-                {n.label}
-                <span className="absolute -bottom-1 left-0 h-px w-0 bg-primary transition-all duration-300 group-hover:w-full" />
-              </a>
-            ))}
-          </nav>
-          <div className="flex items-center gap-3">
-            <CTAButton>
-              <a href={`tel:${PHONE}`} className="hidden md:inline-flex items-center gap-2 rounded-full btn-cta px-5 py-2.5 text-sm font-semibold">
-                <Phone className="h-4 w-4" /> Enroll Now
-              </a>
-            </CTAButton>
-            <button onClick={() => setOpen(true)} className="lg:hidden p-2 text-foreground" aria-label="Open menu">
-              <Menu className="h-6 w-6" />
-            </button>
-          </div>
-        </div>
-      </motion.header>
-
-      {/* Mobile menu overlay */}
-      <motion.div
-        initial={false}
-        animate={{ opacity: open ? 1 : 0, pointerEvents: open ? "auto" : "none" }}
-        transition={{ duration: 0.3 }}
-        className="fixed inset-0 z-[60] bg-navy-deep/95 backdrop-blur-2xl"
-      >
-        <div className="flex items-center justify-between px-5 py-5">
-        <a href="#home" className="flex items-center gap-2 shrink-0">
-  <img src="/edited_logo.png" alt="ExpertAction" className="h-9 w-auto" />
-</a>
-          <button onClick={() => setOpen(false)} className="p-2" aria-label="Close menu"><X className="h-6 w-6" /></button>
-        </div>
-        <nav className="flex flex-col items-center justify-center gap-8 pt-16">
-          {NAV.map((n, i) => (
-            <motion.a
-              key={n.href}
-              href={n.href}
-              onClick={() => setOpen(false)}
-              initial={{ opacity: 0, y: 20 }}
-              animate={open ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-              transition={{ delay: open ? 0.1 + i * 0.06 : 0, duration: 0.4 }}
-              className="text-2xl font-display font-bold hover:text-primary transition-colors"
-            >
-              {n.label}
-            </motion.a>
-          ))}
-          <CTAButton>
-            <motion.a
-              href={`tel:${PHONE}`}
-              initial={{ opacity: 0, y: 20 }}
-              animate={open ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-              transition={{ delay: open ? 0.5 : 0, duration: 0.4 }}
-              className="mt-6 inline-flex items-center gap-2 rounded-full btn-cta px-8 py-4 text-base font-semibold"
-            >
-              <Phone className="h-5 w-5" /> Enroll Now
-            </motion.a>
-          </CTAButton>
-        </nav>
-      </motion.div>
-    </>
-  );
+function useSettings() {
+  const { data } = useQuery({ queryKey: ["all-settings"], queryFn: fetchAllSettings });
+  return (key: string, fallback: string) => data?.[key] ?? fallback;
 }
 
 /* ------------------------- Hero ------------------------- */
@@ -180,7 +76,6 @@ function Hero() {
 
   const headline = s("hero_headline", "Price Action. Precision Execution.");
   const subheadline = s("hero_subheadline", "From Beginner To Market Expert — India's premier academy for copyright-registered price action & intraday trading systems.");
-  // Split headline on first period for two-line styling; fall back gracefully.
   const parts = headline.split(/\.(.+)/);
   const line1 = parts[0] ? parts[0] + "." : headline;
 
@@ -196,18 +91,15 @@ function Hero() {
         transition={{ duration: 1.5 }}
       >
         <video
-  autoPlay
-  muted
-  loop
-  playsInline
-  preload="auto"
-  disablePictureInPicture
-  controls={false}
-  className="h-full w-full object-cover opacity-20"
-  poster={heroImg ?? undefined}
->
-  <source src="/background_vid.mp4" type="video/mp4" />
-</video>
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="h-full w-full object-cover opacity-20"
+          poster={heroImg ?? undefined}
+        >
+          <source src="/background_vid.mp4" type="video/mp4" />
+        </video>
       </motion.div>
       )}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
@@ -304,22 +196,6 @@ function FloatingCandles() {
         </motion.div>
       ))}
     </>
-  );
-}
-
-/* ------------------------- Reveal wrapper ------------------------- */
-function Reveal({ children, delay = 0, y = 40 }: { children: React.ReactNode; delay?: number; y?: number }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.7, delay, ease: [0.2, 0.8, 0.2, 1] }}
-    >
-      {children}
-    </motion.div>
   );
 }
 
@@ -499,7 +375,6 @@ function Courses() {
         <div className="mt-16 grid md:grid-cols-3 gap-6 lg:gap-8">
           {COURSES.map((c, i) => (
             <Reveal key={i} delay={i * 0.1}>
-              {/* flex and flex-col added to the card for vertical alignment */}
               <div className={`group relative rounded-3xl border p-8 h-full flex flex-col card-glow hover:card-glow-hover ${c.popular ? "border-primary/50 bg-gradient-to-b from-primary/10 to-card" : "border-white/10 bg-card"}`}>
                 {c.popular && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-primary to-gold-soft px-4 py-1 text-xs font-bold text-primary-foreground tracking-wider uppercase shadow-[var(--shadow-gold)]">
@@ -516,7 +391,6 @@ function Courses() {
                 </div>
                 <div className="mt-1 text-xs text-muted-foreground">Duration: <span className="text-foreground font-semibold">{c.duration}</span></div>
 
-                {/* flex-grow pushes the buttons to the bottom uniformly */}
                 <ul className="mt-6 space-y-3 border-t border-white/10 pt-6 flex-grow">
                   {c.features.map((f) => (
                     <li key={f} className="flex items-start gap-3 text-sm">
@@ -528,7 +402,6 @@ function Courses() {
                   ))}
                 </ul>
 
-                {/* Wrapped buttons in a flex container to center them without horizontal stretching */}
                 {c.popular ? (
                   <div className="mt-8 flex justify-center">
                     <CTAButton>
@@ -776,7 +649,7 @@ function Contact() {
                 <div className="grid h-11 w-11 place-items-center rounded-xl bg-primary/15 text-primary shrink-0"><Phone className="h-5 w-5" /></div>
                 <div>
                   <div className="text-xs uppercase tracking-widest text-muted-foreground">Phone</div>
-                  <a href={`tel:${PHONE}`} className="mt-1 block font-semibold hover:text-primary transition-colors">{PHONE_DISPLAY}</a>
+                  <a href={`tel:${PHONE}`} className="mt-1 block font-semibold hover:text-primary transition-colors">{PHONE}</a>
                 </div>
               </div>
               <div className="flex items-start gap-4">
@@ -814,47 +687,5 @@ function Contact() {
         </div>
       </div>
     </section>
-  );
-}
-
-/* ------------------------- Footer ------------------------- */
-function Footer() {
-  return (
-    <footer className="relative border-t border-white/10 bg-navy-deep px-5 pt-16 pb-8">
-      <div className="mx-auto max-w-7xl">
-        <div className="grid md:grid-cols-3 gap-10">
-          <div>
-            <div className="flex items-center gap-2">
-              <div className="grid h-9 w-9 place-items-center rounded-lg bg-gradient-to-br from-primary to-gold-soft text-primary-foreground font-black">E</div>
-              <span className="font-display font-extrabold text-lg">Expert<span className="text-primary">Action</span><sup className="text-[10px] text-primary">®</sup></span>
-            </div>
-            <p className="mt-4 text-sm text-muted-foreground">Price Action. Precision Execution.</p>
-          </div>
-          <div>
-            <div className="text-xs uppercase tracking-widest text-primary font-semibold">Quick Links</div>
-            <ul className="mt-4 space-y-2 text-sm">
-              {NAV.map((n) => <li key={n.href}><a href={n.href} className="text-muted-foreground hover:text-primary transition-colors">{n.label}</a></li>)}
-            </ul>
-          </div>
-          <div>
-            <div className="text-xs uppercase tracking-widest text-primary font-semibold">Contact</div>
-            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              <li><a href={`tel:${PHONE}`} className="hover:text-primary">{PHONE_DISPLAY}</a></li>
-              <li><a href={WHATSAPP} className="hover:text-primary" target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
-              <li>Kharadi, Pune - 411014</li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="mt-12 rounded-2xl border border-white/10 bg-card/50 p-5 text-[11px] leading-relaxed text-muted-foreground">
-          ExpertAction® provides educational content for learning purposes only. It does not offer guaranteed returns, portfolio management, or investment advisory services. All trading and investment decisions should be made at your own discretion after considering your financial objectives and risk profile. This website provides educational content only and does NOT constitute investment advice, financial recommendation, or endorsement of specific securities. No guaranteed returns are promised or implied. Trading in financial markets involves risk, and you are advised to seek guidance from SEBI-registered professionals before making investment decisions.
-        </div>
-
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
-          <p>Copyright © 2026 ExpertAction Price Action Trading Academy - All Rights Reserved.</p>
-          <a href="/admin" className="text-muted-foreground/60 hover:text-primary transition-colors">Admin Login</a>
-        </div>
-      </div>
-    </footer>
   );
 }
