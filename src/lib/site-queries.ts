@@ -19,6 +19,13 @@ export async function fetchSettingSignedUrl(key: string): Promise<string | null>
   return signedUrl(path);
 }
 
+export async function fetchAllSettings(): Promise<Record<string, string>> {
+  const { data } = await supabase.from("site_settings").select("key, value");
+  const out: Record<string, string> = {};
+  for (const row of data ?? []) if (row.value != null) out[row.key] = row.value;
+  return out;
+}
+
 export interface GalleryImage {
   id: string;
   image_url: string; // storage path
