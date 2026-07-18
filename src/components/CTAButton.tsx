@@ -1,19 +1,19 @@
-import { ReactNode } from "react";
-import GlareHover from "@/components/ui/GlareHover";
+import GlareHover from "../components/ui/GlareHover";
 
-type CTAButtonProps = {
-  children: ReactNode;
-};
-
-export default function CTAButton({ children }: CTAButtonProps) {
+export default function CTAButton({ children }: { children: React.ReactNode }) {
   return (
     <GlareHover
-      borderRadius="9999px"
-      glareColor="#ffffff"
-      glareOpacity={0.35}
-      transitionDuration={700}
-    >
-      {children}
-    </GlareHover>
+  width="max-content" /* Or "fit-content" to prevent horizontal stretching */
+  height="auto"
+  background="transparent"
+  borderColor="transparent"
+  borderRadius="9999px"
+  glareColor="#ffffff"
+  glareOpacity={0.35}
+  transitionDuration={700}
+  style={{ display: "inline-block" }} /* Change from block to inline-block */
+>
+  {children}
+</GlareHover>
   );
 }

@@ -524,17 +524,23 @@ function Courses() {
                   ))}
                 </ul>
 
-                {c.popular ? (
-                  <CTAButton>
-                    <a href={`tel:${PHONE}`} className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold btn-cta">
-                      <Phone className="h-4 w-4" /> Call to Enroll
-                    </a>
-                  </CTAButton>
-                ) : (
-                  <a href={`tel:${PHONE}`} className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold btn-cta-outline">
-                    <Phone className="h-4 w-4" /> Call to Enroll
-                  </a>
-                )}
+                {/* Replace the existing button logic inside the COURSES.map with this: */}
+
+{c.popular ? (
+  <div className="mt-8 flex justify-center">
+    <CTAButton>
+      <a href={`tel:${PHONE}`} className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold btn-cta">
+        <Phone className="h-4 w-4" /> Call to Enroll
+      </a>
+    </CTAButton>
+  </div>
+) : (
+  <div className="mt-8 flex justify-center">
+    <a href={`tel:${PHONE}`} className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold btn-cta-outline">
+      <Phone className="h-4 w-4" /> Call to Enroll
+    </a>
+  </div>
+)}
               </div>
             </Reveal>
           ))}
