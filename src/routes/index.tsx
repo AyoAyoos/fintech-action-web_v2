@@ -196,15 +196,18 @@ function Hero() {
         transition={{ duration: 1.5 }}
       >
         <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="h-full w-full object-cover opacity-20"
-          poster={heroImg ?? undefined}
-        >
-          <source src="/background_vid.mp4" type="video/mp4" />
-        </video>
+  autoPlay
+  muted
+  loop
+  playsInline
+  preload="auto"
+  disablePictureInPicture
+  controls={false}
+  className="h-full w-full object-cover opacity-20"
+  poster={heroImg ?? undefined}
+>
+  <source src="/background_vid.mp4" type="video/mp4" />
+</video>
       </motion.div>
       )}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
