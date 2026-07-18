@@ -446,7 +446,6 @@ const COURSE_FEATURES = [
   "Practical Trading Sessions",
   "Certificate of Completion",
 ];
-
 function Courses() {
   const s = useSettings();
   const COURSES = [
@@ -497,7 +496,8 @@ function Courses() {
         <div className="mt-16 grid md:grid-cols-3 gap-6 lg:gap-8">
           {COURSES.map((c, i) => (
             <Reveal key={i} delay={i * 0.1}>
-              <div className={`group relative rounded-3xl border p-8 h-full card-glow hover:card-glow-hover ${c.popular ? "border-primary/50 bg-gradient-to-b from-primary/10 to-card" : "border-white/10 bg-card"}`}>
+              {/* flex and flex-col added to the card for vertical alignment */}
+              <div className={`group relative rounded-3xl border p-8 h-full flex flex-col card-glow hover:card-glow-hover ${c.popular ? "border-primary/50 bg-gradient-to-b from-primary/10 to-card" : "border-white/10 bg-card"}`}>
                 {c.popular && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-primary to-gold-soft px-4 py-1 text-xs font-bold text-primary-foreground tracking-wider uppercase shadow-[var(--shadow-gold)]">
                     Most Popular
@@ -513,7 +513,8 @@ function Courses() {
                 </div>
                 <div className="mt-1 text-xs text-muted-foreground">Duration: <span className="text-foreground font-semibold">{c.duration}</span></div>
 
-                <ul className="mt-6 space-y-3 border-t border-white/10 pt-6">
+                {/* flex-grow pushes the buttons to the bottom uniformly */}
+                <ul className="mt-6 space-y-3 border-t border-white/10 pt-6 flex-grow">
                   {c.features.map((f) => (
                     <li key={f} className="flex items-start gap-3 text-sm">
                       <span className="mt-0.5 shrink-0 grid h-5 w-5 place-items-center rounded-full bg-primary/15 text-primary">
@@ -524,23 +525,22 @@ function Courses() {
                   ))}
                 </ul>
 
-                {/* Replace the existing button logic inside the COURSES.map with this: */}
-
-{c.popular ? (
-  <div className="mt-8 flex justify-center">
-    <CTAButton>
-      <a href={`tel:${PHONE}`} className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold btn-cta">
-        <Phone className="h-4 w-4" /> Call to Enroll
-      </a>
-    </CTAButton>
-  </div>
-) : (
-  <div className="mt-8 flex justify-center">
-    <a href={`tel:${PHONE}`} className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold btn-cta-outline">
-      <Phone className="h-4 w-4" /> Call to Enroll
-    </a>
-  </div>
-)}
+                {/* Wrapped buttons in a flex container to center them without horizontal stretching */}
+                {c.popular ? (
+                  <div className="mt-8 flex justify-center">
+                    <CTAButton>
+                      <a href={`tel:${PHONE}`} className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold btn-cta">
+                        <Phone className="h-4 w-4" /> Call to Enroll
+                      </a>
+                    </CTAButton>
+                  </div>
+                ) : (
+                  <div className="mt-8 flex justify-center">
+                    <a href={`tel:${PHONE}`} className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold btn-cta-outline">
+                      <Phone className="h-4 w-4" /> Call to Enroll
+                    </a>
+                  </div>
+                )}
               </div>
             </Reveal>
           ))}
