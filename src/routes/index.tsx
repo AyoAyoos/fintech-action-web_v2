@@ -27,6 +27,8 @@ import {
 } from "lucide-react";
 import { fetchAllSettings, fetchGallery, fetchSettingSignedUrl } from "@/lib/site-queries";
 import { supabase } from "@/integrations/supabase/client";
+import TextType from "../components/TextType";
+import CTAButton from "../components/CTAButton";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -95,12 +97,9 @@ function Navbar() {
         }`}
       >
         <div className="mx-auto max-w-7xl px-5 flex items-center justify-between gap-4">
-          <a href="#home" className="flex items-center gap-2 shrink-0">
-            <div className="grid h-9 w-9 place-items-center rounded-lg bg-gradient-to-br from-primary to-gold-soft text-primary-foreground font-black">E</div>
-            <span className="font-display font-extrabold text-lg tracking-tight">
-              Expert<span className="text-primary">Action</span><sup className="text-[10px] text-primary">®</sup>
-            </span>
-          </a>
+        <a href="#home" className="flex items-center gap-2 shrink-0">
+  <img src="/edited_logo.png" alt="ExpertAction" className="h-9 w-auto" />
+</a>
           <nav className="hidden lg:flex items-center gap-8">
             {NAV.map((n) => (
               <a key={n.href} href={n.href} className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors relative group">
@@ -110,9 +109,11 @@ function Navbar() {
             ))}
           </nav>
           <div className="flex items-center gap-3">
-            <a href={`tel:${PHONE}`} className="hidden md:inline-flex items-center gap-2 rounded-full btn-cta px-5 py-2.5 text-sm font-semibold">
-              <Phone className="h-4 w-4" /> Enroll Now
-            </a>
+            <CTAButton>
+              <a href={`tel:${PHONE}`} className="hidden md:inline-flex items-center gap-2 rounded-full btn-cta px-5 py-2.5 text-sm font-semibold">
+                <Phone className="h-4 w-4" /> Enroll Now
+              </a>
+            </CTAButton>
             <button onClick={() => setOpen(true)} className="lg:hidden p-2 text-foreground" aria-label="Open menu">
               <Menu className="h-6 w-6" />
             </button>
@@ -128,7 +129,9 @@ function Navbar() {
         className="fixed inset-0 z-[60] bg-navy-deep/95 backdrop-blur-2xl"
       >
         <div className="flex items-center justify-between px-5 py-5">
-          <span className="font-display font-extrabold text-lg">Expert<span className="text-primary">Action</span></span>
+        <a href="#home" className="flex items-center gap-2 shrink-0">
+  <img src="/edited_logo.png" alt="ExpertAction" className="h-9 w-auto" />
+</a>
           <button onClick={() => setOpen(false)} className="p-2" aria-label="Close menu"><X className="h-6 w-6" /></button>
         </div>
         <nav className="flex flex-col items-center justify-center gap-8 pt-16">
@@ -145,15 +148,17 @@ function Navbar() {
               {n.label}
             </motion.a>
           ))}
-          <motion.a
-            href={`tel:${PHONE}`}
-            initial={{ opacity: 0, y: 20 }}
-            animate={open ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ delay: open ? 0.5 : 0, duration: 0.4 }}
-            className="mt-6 inline-flex items-center gap-2 rounded-full btn-cta px-8 py-4 text-base font-semibold"
-          >
-            <Phone className="h-5 w-5" /> Enroll Now
-          </motion.a>
+          <CTAButton>
+            <motion.a
+              href={`tel:${PHONE}`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={open ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ delay: open ? 0.5 : 0, duration: 0.4 }}
+              className="mt-6 inline-flex items-center gap-2 rounded-full btn-cta px-8 py-4 text-base font-semibold"
+            >
+              <Phone className="h-5 w-5" /> Enroll Now
+            </motion.a>
+          </CTAButton>
         </nav>
       </motion.div>
     </>
@@ -178,21 +183,29 @@ function Hero() {
   // Split headline on first period for two-line styling; fall back gracefully.
   const parts = headline.split(/\.(.+)/);
   const line1 = parts[0] ? parts[0] + "." : headline;
-  const line2 = parts[1]?.trim() ?? "";
 
   return (
     <section id="home" ref={ref} className="relative min-h-screen flex items-center justify-center overflow-hidden bg-hero">
       <motion.div style={{ y, opacity }} className="absolute inset-0 bg-chart-grid opacity-50" />
       {heroImg && (
         <motion.div
-          style={{ y }}
-          className="absolute inset-0 bg-cover bg-center opacity-20"
-          initial={{ scale: 1.1 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 1.5 }}
+        style={{ y }}
+        className="absolute inset-0 overflow-hidden"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.5 }}
+      >
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="h-full w-full object-cover opacity-20"
+          poster={heroImg ?? undefined}
         >
-          <img src={heroImg} alt="" className="h-full w-full object-cover" />
-        </motion.div>
+          <source src="/background_vid.mp4" type="video/mp4" />
+        </video>
+      </motion.div>
       )}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
 
@@ -215,7 +228,17 @@ function Hero() {
           className="font-display text-5xl md:text-7xl lg:text-8xl font-black leading-[0.95] tracking-tight"
         >
           {line1}
-          {line2 && <><br /><span className="text-gradient-gold">{line2}</span></>}
+          <br />
+          <TextType
+            as="span"
+            className="text-gradient-gold"
+            text={["Precision Execution", "Risk Management", "Market Mastery"]}
+            typingSpeed={70}
+            pauseDuration={1800}
+            deletingSpeed={35}
+            cursorCharacter="|"
+            cursorClassName="text-primary"
+          />
         </motion.h1>
 
         <motion.p
@@ -233,9 +256,11 @@ function Hero() {
           transition={{ duration: 0.8, delay: 0.8 }}
           className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <a href={`tel:${PHONE}`} className="group inline-flex items-center gap-2 rounded-full btn-cta px-8 py-4 text-base font-semibold">
-            <Phone className="h-5 w-5" /> Call Now
-          </a>
+          <CTAButton>
+            <a href={`tel:${PHONE}`} className="group inline-flex items-center gap-2 rounded-full btn-cta px-8 py-4 text-base font-semibold">
+              <Phone className="h-5 w-5" /> Call Now
+            </a>
+          </CTAButton>
           <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 backdrop-blur px-8 py-4 text-base font-semibold hover:bg-white/10 hover:border-primary/50 transition-all">
             <MessageCircle className="h-5 w-5 text-primary" /> Chat on WhatsApp
           </a>
@@ -499,9 +524,17 @@ function Courses() {
                   ))}
                 </ul>
 
-                <a href={`tel:${PHONE}`} className={`mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold ${c.popular ? "btn-cta" : "btn-cta-outline"}`}>
-                  <Phone className="h-4 w-4" /> Call to Enroll
-                </a>
+                {c.popular ? (
+                  <CTAButton>
+                    <a href={`tel:${PHONE}`} className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold btn-cta">
+                      <Phone className="h-4 w-4" /> Call to Enroll
+                    </a>
+                  </CTAButton>
+                ) : (
+                  <a href={`tel:${PHONE}`} className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold btn-cta-outline">
+                    <Phone className="h-4 w-4" /> Call to Enroll
+                  </a>
+                )}
               </div>
             </Reveal>
           ))}
