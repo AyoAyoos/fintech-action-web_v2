@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform, useInView, animate, useMotionValue } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { z } from "zod";
 import {
   Menu,
   X,
@@ -20,8 +22,11 @@ import {
   Target,
   Users,
   Sparkles,
+  Send,
+  Loader2,
 } from "lucide-react";
-import { fetchGallery, fetchSettingSignedUrl } from "@/lib/site-queries";
+import { fetchAllSettings, fetchGallery, fetchSettingSignedUrl } from "@/lib/site-queries";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -44,6 +49,11 @@ const NAV = [
 const PHONE = "+918237220005";
 const PHONE_DISPLAY = "+91 82372 20005";
 const WHATSAPP = "https://wa.me/918237220005";
+
+function useSettings() {
+  const { data } = useQuery({ queryKey: ["all-settings"], queryFn: fetchAllSettings });
+  return (key: string, fallback: string) => data?.[key] ?? fallback;
+}
 
 function Home() {
   return (
@@ -100,7 +110,7 @@ function Navbar() {
             ))}
           </nav>
           <div className="flex items-center gap-3">
-            <a href={`tel:${PHONE}`} className="hidden md:inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-gold-soft px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-gold)] hover:scale-[1.03] active:scale-[0.98] transition-transform">
+            <a href={`tel:${PHONE}`} className="hidden md:inline-flex items-center gap-2 rounded-full btn-cta px-5 py-2.5 text-sm font-semibold">
               <Phone className="h-4 w-4" /> Enroll Now
             </a>
             <button onClick={() => setOpen(true)} className="lg:hidden p-2 text-foreground" aria-label="Open menu">
@@ -140,7 +150,7 @@ function Navbar() {
             initial={{ opacity: 0, y: 20 }}
             animate={open ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ delay: open ? 0.5 : 0, duration: 0.4 }}
-            className="mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-gold-soft px-8 py-4 text-base font-semibold text-primary-foreground shadow-[var(--shadow-gold)]"
+            className="mt-6 inline-flex items-center gap-2 rounded-full btn-cta px-8 py-4 text-base font-semibold"
           >
             <Phone className="h-5 w-5" /> Enroll Now
           </motion.a>
@@ -153,6 +163,7 @@ function Navbar() {
 /* ------------------------- Hero ------------------------- */
 function Hero() {
   const ref = useRef<HTMLDivElement>(null);
+  const s = useSettings();
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 600], [0, 150]);
   const opacity = useTransform(scrollY, [0, 500], [1, 0]);
@@ -162,9 +173,15 @@ function Hero() {
     queryFn: () => fetchSettingSignedUrl("hero_image"),
   });
 
+  const headline = s("hero_headline", "Price Action. Precision Execution.");
+  const subheadline = s("hero_subheadline", "From Beginner To Market Expert — India's premier academy for copyright-registered price action & intraday trading systems.");
+  // Split headline on first period for two-line styling; fall back gracefully.
+  const parts = headline.split(/\.(.+)/);
+  const line1 = parts[0] ? parts[0] + "." : headline;
+  const line2 = parts[1]?.trim() ?? "";
+
   return (
     <section id="home" ref={ref} className="relative min-h-screen flex items-center justify-center overflow-hidden bg-hero">
-      {/* Background */}
       <motion.div style={{ y, opacity }} className="absolute inset-0 bg-chart-grid opacity-50" />
       {heroImg && (
         <motion.div
@@ -179,7 +196,6 @@ function Hero() {
       )}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
 
-      {/* Floating candlestick decorations */}
       <FloatingCandles />
 
       <div className="relative z-10 mx-auto max-w-5xl px-5 text-center pt-24">
@@ -198,9 +214,8 @@ function Hero() {
           transition={{ duration: 0.9, delay: 0.35, ease: [0.2, 0.8, 0.2, 1] }}
           className="font-display text-5xl md:text-7xl lg:text-8xl font-black leading-[0.95] tracking-tight"
         >
-          Price Action.
-          <br />
-          <span className="text-gradient-gold">Precision Execution.</span>
+          {line1}
+          {line2 && <><br /><span className="text-gradient-gold">{line2}</span></>}
         </motion.h1>
 
         <motion.p
@@ -209,7 +224,7 @@ function Hero() {
           transition={{ duration: 0.8, delay: 0.6 }}
           className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto"
         >
-          From Beginner To Market Expert — India's premier academy for copyright-registered price action & intraday trading systems.
+          {subheadline}
         </motion.p>
 
         <motion.div
@@ -218,7 +233,7 @@ function Hero() {
           transition={{ duration: 0.8, delay: 0.8 }}
           className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <a href={`tel:${PHONE}`} className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-gold-soft px-8 py-4 text-base font-semibold text-primary-foreground shadow-[var(--shadow-gold)] hover:scale-[1.04] active:scale-[0.98] transition-transform">
+          <a href={`tel:${PHONE}`} className="group inline-flex items-center gap-2 rounded-full btn-cta px-8 py-4 text-base font-semibold">
             <Phone className="h-5 w-5" /> Call Now
           </a>
           <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 backdrop-blur px-8 py-4 text-base font-semibold hover:bg-white/10 hover:border-primary/50 transition-all">
@@ -227,7 +242,6 @@ function Hero() {
         </motion.div>
       </div>
 
-      {/* Scroll indicator */}
       <motion.div
         animate={{ y: [0, 10, 0] }}
         transition={{ duration: 2, repeat: Infinity }}
@@ -283,6 +297,7 @@ function Reveal({ children, delay = 0, y = 40 }: { children: React.ReactNode; de
 
 /* ------------------------- About ------------------------- */
 function About() {
+  const s = useSettings();
   const { data: founderImg } = useQuery({
     queryKey: ["setting", "founder_image"],
     queryFn: () => fetchSettingSignedUrl("founder_image"),
@@ -324,17 +339,17 @@ function About() {
           <Reveal>
             <span className="text-primary text-sm font-semibold tracking-widest uppercase">About</span>
             <h2 className="mt-2 font-display text-4xl md:text-5xl font-black">
-              About <span className="text-gradient-gold">ExpertAction®</span>
+              {s("section_about_heading", "About ExpertAction®")}
             </h2>
           </Reveal>
           <Reveal delay={0.1}>
             <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
-              Founded in <span className="text-foreground font-semibold">2019</span> by <span className="text-foreground font-semibold">Mangesh Balasaheb Waghmare</span>, ExpertAction® is dedicated to stock market education focused on Price Action Trading, Risk Management, Trading Psychology, and Intraday Trading Strategies.
+              {s("about_bio", "Founded in 2019 by Mangesh Balasaheb Waghmare, ExpertAction® is dedicated to stock market education focused on Price Action Trading, Risk Management, Trading Psychology, and Intraday Trading Strategies.")}
             </p>
           </Reveal>
           <Reveal delay={0.2}>
             <p className="mt-4 text-muted-foreground leading-relaxed">
-              We've trained <span className="text-primary font-semibold">1,500+ students</span> through classroom and online programs in Pune and across India.
+              {s("about_bio_2", "We've trained 1,500+ students through classroom and online programs in Pune and across India.")}
             </p>
           </Reveal>
 
@@ -353,7 +368,6 @@ function About() {
         </div>
       </div>
 
-      {/* Stats */}
       <div className="mx-auto max-w-6xl mt-24 grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatCard end={1500} suffix="+" label="Students Trained" icon={Users} />
         <StatCard end={2019} label="Founded" icon={TrendingUp} plain />
@@ -408,40 +422,40 @@ const COURSE_FEATURES = [
   "Certificate of Completion",
 ];
 
-const COURSES = [
-  {
-    title: "2 Copyrighted Entry Setup",
-    subtitle: "Understanding Price Action",
-    tag: "Beginner",
-    desc: "Basic to Advanced. Perfect for beginners entering the markets.",
-    duration: "2 Days",
-    fee: "₹20,000",
-    features: COURSE_FEATURES.slice(0, 5),
-    popular: false,
-  },
-  {
-    title: "7 Copyrighted Entry Setup",
-    subtitle: "Advanced Trader Program",
-    tag: "Intermediate",
-    desc: "Advanced Price Action & Options Trading Concepts.",
-    duration: "15 Days",
-    fee: "₹50,000",
-    features: COURSE_FEATURES.slice(0, 7),
-    popular: true,
-  },
-  {
-    title: "11 Copyrighted Entry Setup",
-    subtitle: "Professional Master Program",
-    tag: "Master",
-    desc: "Complete Price Action Framework for professional traders.",
-    duration: "30 Days",
-    fee: "₹1,00,000",
-    features: COURSE_FEATURES,
-    popular: false,
-  },
-];
-
 function Courses() {
+  const s = useSettings();
+  const COURSES = [
+    {
+      title: s("course_1_title", "2 Copyrighted Entry Setup"),
+      subtitle: "Understanding Price Action",
+      tag: "Beginner",
+      desc: s("course_1_desc", "Basic to Advanced. Perfect for beginners entering the markets."),
+      duration: "2 Days",
+      fee: s("course_1_price", "₹20,000"),
+      features: COURSE_FEATURES.slice(0, 5),
+      popular: false,
+    },
+    {
+      title: s("course_2_title", "7 Copyrighted Entry Setup"),
+      subtitle: "Advanced Trader Program",
+      tag: "Intermediate",
+      desc: s("course_2_desc", "Advanced Price Action & Options Trading Concepts."),
+      duration: "15 Days",
+      fee: s("course_2_price", "₹50,000"),
+      features: COURSE_FEATURES.slice(0, 7),
+      popular: true,
+    },
+    {
+      title: s("course_3_title", "11 Copyrighted Entry Setup"),
+      subtitle: "Professional Master Program",
+      tag: "Master",
+      desc: s("course_3_desc", "Complete Price Action Framework for professional traders."),
+      duration: "30 Days",
+      fee: s("course_3_price", "₹1,00,000"),
+      features: COURSE_FEATURES,
+      popular: false,
+    },
+  ];
   return (
     <section id="courses" className="relative py-24 md:py-32 px-5 bg-navy-deep/50">
       <div className="mx-auto max-w-7xl">
@@ -449,15 +463,15 @@ function Courses() {
           <div className="text-center max-w-3xl mx-auto">
             <span className="text-primary text-sm font-semibold tracking-widest uppercase">Programs</span>
             <h2 className="mt-2 font-display text-4xl md:text-5xl font-black">
-              Our <span className="text-gradient-gold">Entry Setup</span> Trading Programs
+              {s("section_courses_heading", "Our Entry Setup Trading Programs")}
             </h2>
-            <p className="mt-4 text-muted-foreground">Copyright-registered curricula built from real market experience.</p>
+            <p className="mt-4 text-muted-foreground">{s("section_courses_sub", "Copyright-registered curricula built from real market experience.")}</p>
           </div>
         </Reveal>
 
         <div className="mt-16 grid md:grid-cols-3 gap-6 lg:gap-8">
           {COURSES.map((c, i) => (
-            <Reveal key={c.title} delay={i * 0.1}>
+            <Reveal key={i} delay={i * 0.1}>
               <div className={`group relative rounded-3xl border p-8 h-full card-glow hover:card-glow-hover ${c.popular ? "border-primary/50 bg-gradient-to-b from-primary/10 to-card" : "border-white/10 bg-card"}`}>
                 {c.popular && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-primary to-gold-soft px-4 py-1 text-xs font-bold text-primary-foreground tracking-wider uppercase shadow-[var(--shadow-gold)]">
@@ -485,7 +499,7 @@ function Courses() {
                   ))}
                 </ul>
 
-                <a href={`tel:${PHONE}`} className={`mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold transition-all ${c.popular ? "bg-gradient-to-r from-primary to-gold-soft text-primary-foreground shadow-[var(--shadow-gold)] hover:scale-[1.03]" : "border border-primary/40 text-primary hover:bg-primary hover:text-primary-foreground"}`}>
+                <a href={`tel:${PHONE}`} className={`mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold ${c.popular ? "btn-cta" : "btn-cta-outline"}`}>
                   <Phone className="h-4 w-4" /> Call to Enroll
                 </a>
               </div>
@@ -499,6 +513,7 @@ function Courses() {
 
 /* ------------------------- Gallery Slider ------------------------- */
 function Gallery() {
+  const s = useSettings();
   const { data: images = [] } = useQuery({ queryKey: ["gallery"], queryFn: fetchGallery });
   const [idx, setIdx] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -522,9 +537,9 @@ function Gallery() {
           <div className="text-center max-w-3xl mx-auto">
             <span className="text-primary text-sm font-semibold tracking-widest uppercase">Gallery</span>
             <h2 className="mt-2 font-display text-4xl md:text-5xl font-black">
-              Our Research in <span className="text-gradient-gold">Pictures</span>
+              {s("section_gallery_heading", "Our Research in Pictures")}
             </h2>
-            <p className="mt-4 text-muted-foreground">A snapshot of industry insights, sessions, and student milestones.</p>
+            <p className="mt-4 text-muted-foreground">{s("section_gallery_sub", "A snapshot of industry insights, sessions, and student milestones.")}</p>
           </div>
         </Reveal>
 
@@ -593,13 +608,14 @@ const WHY = [
 ];
 
 function WhyUs() {
+  const s = useSettings();
   return (
     <section className="relative py-24 md:py-32 px-5 bg-navy-deep/50">
       <div className="mx-auto max-w-7xl">
         <Reveal>
           <div className="text-center">
             <span className="text-primary text-sm font-semibold tracking-widest uppercase">Why Us</span>
-            <h2 className="mt-2 font-display text-4xl md:text-5xl font-black">Why Choose <span className="text-gradient-gold">ExpertAction</span></h2>
+            <h2 className="mt-2 font-display text-4xl md:text-5xl font-black">{s("section_why_heading", "Why Choose ExpertAction")}</h2>
           </div>
         </Reveal>
         <div className="mt-14 grid grid-cols-2 lg:grid-cols-4 gap-5">
@@ -620,15 +636,87 @@ function WhyUs() {
   );
 }
 
+/* ------------------------- Contact Form ------------------------- */
+const PROGRAMS = [
+  "2-Day Beginner Program",
+  "15-Day Advanced Program",
+  "30-Day Professional Program",
+];
+
+const contactSchema = z.object({
+  full_name: z.string().trim().min(2, "Please enter your full name").max(100),
+  phone: z.string().trim().min(7, "Please enter a valid phone number").max(20),
+  email: z.string().trim().email("Please enter a valid email").max(255),
+  program: z.enum(PROGRAMS as [string, ...string[]], { message: "Please choose a program" }),
+  message: z.string().trim().max(1000).optional().or(z.literal("")),
+});
+
+function ContactForm() {
+  const [form, setForm] = useState({ full_name: "", phone: "", email: "", program: "", message: "" });
+  const [submitting, setSubmitting] = useState(false);
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const parsed = contactSchema.safeParse(form);
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? "Please check the form");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const { error } = await supabase.from("contact_submissions").insert({
+        full_name: parsed.data.full_name,
+        phone: parsed.data.phone,
+        email: parsed.data.email,
+        program: parsed.data.program,
+        message: parsed.data.message || null,
+      });
+      if (error) throw error;
+      toast.success("Thanks! We'll get back to you shortly.");
+      setForm({ full_name: "", phone: "", email: "", program: "", message: "" });
+    } catch (err) {
+      toast.error((err as Error).message || "Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  const field = "w-full rounded-xl border border-white/10 bg-navy-deep/60 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all";
+
+  return (
+    <form onSubmit={onSubmit} className="h-full rounded-3xl border border-white/10 bg-card p-6 md:p-8 space-y-4">
+      <div>
+        <h3 className="font-display text-2xl font-extrabold">Enquire About a Program</h3>
+        <p className="mt-1 text-sm text-muted-foreground">Share your details — our team will reach out within one business day.</p>
+      </div>
+      <div className="grid sm:grid-cols-2 gap-4">
+        <input required className={field} placeholder="Full Name *" value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} maxLength={100} />
+        <input required className={field} placeholder="Phone Number *" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} maxLength={20} type="tel" />
+      </div>
+      <input required className={field} placeholder="Email *" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} maxLength={255} type="email" />
+      <select required className={field} value={form.program} onChange={(e) => setForm({ ...form, program: e.target.value })}>
+        <option value="">Interested Program *</option>
+        {PROGRAMS.map((p) => <option key={p} value={p} className="bg-navy-deep">{p}</option>)}
+      </select>
+      <textarea className={field} placeholder="Message (optional)" rows={4} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} maxLength={1000} />
+      <button type="submit" disabled={submitting} className="inline-flex w-full items-center justify-center gap-2 rounded-full btn-cta px-6 py-3.5 text-sm font-semibold disabled:opacity-60 disabled:pointer-events-none">
+        {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+        {submitting ? "Sending..." : "Send Enquiry"}
+      </button>
+    </form>
+  );
+}
+
 /* ------------------------- Contact ------------------------- */
 function Contact() {
+  const s = useSettings();
   return (
     <section id="contact" className="relative py-24 md:py-32 px-5">
       <div className="mx-auto max-w-7xl">
         <Reveal>
           <div className="text-center">
             <span className="text-primary text-sm font-semibold tracking-widest uppercase">Contact</span>
-            <h2 className="mt-2 font-display text-4xl md:text-5xl font-black">Get in <span className="text-gradient-gold">Touch</span></h2>
+            <h2 className="mt-2 font-display text-4xl md:text-5xl font-black">{s("section_contact_heading", "Get in Touch")}</h2>
           </div>
         </Reveal>
 
@@ -658,26 +746,28 @@ function Contact() {
               </div>
 
               <div className="flex flex-wrap gap-3 pt-4 border-t border-white/10">
-                <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-gold-soft px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:scale-[1.03] transition-transform">
+                <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full btn-cta px-5 py-2.5 text-sm font-semibold">
                   <MessageCircle className="h-4 w-4" /> WhatsApp
                 </a>
                 <a href="https://www.facebook.com/ExpertAction.in" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-5 py-2.5 text-sm font-semibold hover:bg-white/10 transition-colors">
                   <Facebook className="h-4 w-4" /> Facebook
                 </a>
               </div>
+
+              <div className="rounded-2xl overflow-hidden border border-white/10 min-h-[220px]">
+                <iframe
+                  title="ExpertAction location"
+                  src="https://www.google.com/maps?q=City+Vista+Downtown+Kharadi+Pune&output=embed"
+                  className="h-[220px] w-full border-0"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+              </div>
             </div>
           </Reveal>
 
           <Reveal delay={0.1}>
-            <div className="h-full rounded-3xl border border-white/10 bg-card overflow-hidden min-h-[400px]">
-              <iframe
-                title="ExpertAction location"
-                src="https://www.google.com/maps?q=City+Vista+Downtown+Kharadi+Pune&output=embed"
-                className="h-full w-full min-h-[400px] border-0"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
-            </div>
+            <ContactForm />
           </Reveal>
         </div>
       </div>
