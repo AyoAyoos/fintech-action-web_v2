@@ -13,6 +13,10 @@ import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as LayoutIndexRouteImport } from './routes/_layout.index'
+import { Route as LayoutAboutRouteImport } from './routes/_layout.about'
+import { Route as LayoutContactRouteImport } from './routes/_layout.contact'
+import { Route as LayoutCoursesRouteImport } from './routes/_layout.courses'
+import { Route as LayoutGalleryRouteImport } from './routes/_layout.gallery'
 
 const LayoutRoute = LayoutRouteImport.update({
   id: '/_layout',
@@ -33,15 +37,43 @@ const LayoutIndexRoute = LayoutIndexRouteImport.update({
   path: '/',
   getParentRoute: () => LayoutRoute,
 } as any)
+const LayoutAboutRoute = LayoutAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutContactRoute = LayoutContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutCoursesRoute = LayoutCoursesRouteImport.update({
+  id: '/courses',
+  path: '/courses',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutGalleryRoute = LayoutGalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
+  getParentRoute: () => LayoutRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof LayoutIndexRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/about': typeof LayoutAboutRoute
+  '/contact': typeof LayoutContactRoute
+  '/courses': typeof LayoutCoursesRoute
+  '/gallery': typeof LayoutGalleryRoute
 }
 export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/about': typeof LayoutAboutRoute
+  '/contact': typeof LayoutContactRoute
+  '/courses': typeof LayoutCoursesRoute
+  '/gallery': typeof LayoutGalleryRoute
   '/': typeof LayoutIndexRoute
 }
 export interface FileRoutesById {
@@ -49,14 +81,28 @@ export interface FileRoutesById {
   '/_layout': typeof LayoutRouteWithChildren
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/_layout/about': typeof LayoutAboutRoute
+  '/_layout/contact': typeof LayoutContactRoute
+  '/_layout/courses': typeof LayoutCoursesRoute
+  '/_layout/gallery': typeof LayoutGalleryRoute
   '/_layout/': typeof LayoutIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/auth'
+  fullPaths:
+    '/' | '/admin' | '/auth' | '/about' | '/contact' | '/courses' | '/gallery'
   fileRoutesByTo: FileRoutesByTo
-  to: '/admin' | '/auth' | '/'
-  id: '__root__' | '/_layout' | '/admin' | '/auth' | '/_layout/'
+  to: '/admin' | '/auth' | '/about' | '/contact' | '/courses' | '/gallery' | '/'
+  id:
+    | '__root__'
+    | '/_layout'
+    | '/admin'
+    | '/auth'
+    | '/_layout/about'
+    | '/_layout/contact'
+    | '/_layout/courses'
+    | '/_layout/gallery'
+    | '/_layout/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -95,14 +141,50 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutIndexRouteImport
       parentRoute: typeof LayoutRoute
     }
+    '/_layout/about': {
+      id: '/_layout/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof LayoutAboutRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/contact': {
+      id: '/_layout/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof LayoutContactRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/courses': {
+      id: '/_layout/courses'
+      path: '/courses'
+      fullPath: '/courses'
+      preLoaderRoute: typeof LayoutCoursesRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/gallery': {
+      id: '/_layout/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof LayoutGalleryRouteImport
+      parentRoute: typeof LayoutRoute
+    }
   }
 }
 
 interface LayoutRouteChildren {
+  LayoutAboutRoute: typeof LayoutAboutRoute
+  LayoutContactRoute: typeof LayoutContactRoute
+  LayoutCoursesRoute: typeof LayoutCoursesRoute
+  LayoutGalleryRoute: typeof LayoutGalleryRoute
   LayoutIndexRoute: typeof LayoutIndexRoute
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
+  LayoutAboutRoute: LayoutAboutRoute,
+  LayoutContactRoute: LayoutContactRoute,
+  LayoutCoursesRoute: LayoutCoursesRoute,
+  LayoutGalleryRoute: LayoutGalleryRoute,
   LayoutIndexRoute: LayoutIndexRoute,
 }
 
