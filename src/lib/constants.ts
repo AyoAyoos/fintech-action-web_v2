@@ -1,9 +1,9 @@
 export const NAV = [
-    { label: "Home", href: "#home" },
-    { label: "About", href: "#about" },
-    { label: "Courses", href: "#courses" },
-    { label: "Gallery", href: "#gallery" },
-    { label: "Contact", href: "#contact" },
+    { label: "Home", href: "/" },
+    { label: "About", href: "/about" },
+    { label: "Courses", href: "/courses" },
+    { label: "Gallery", href: "/gallery" },
+    { label: "Contact", href: "/contact" },
   ];
   
   export const PHONE = "+918237220005";

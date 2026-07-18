@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import Hero from "@/components/sections/hero";
 import About from "@/components/sections/About";
 import Courses from "@/components/sections/Courses";
@@ -20,11 +20,15 @@ function Home() {
   return (
     <>
       <Hero />
-      <About />
-      <Courses />
-      <Gallery />
-      <WhyUs />
-      <Contact />
+
+      <div className="flex justify-center py-16">
+        <Link
+          to="/about"
+          className="rounded-full bg-primary px-8 py-4 text-white font-semibold hover:opacity-90 transition"
+        >
+          Learn More →
+        </Link>
+      </div>
     </>
   );
 }

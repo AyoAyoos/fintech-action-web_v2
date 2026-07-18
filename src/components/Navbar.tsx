@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Menu, X, Phone } from "lucide-react";
 import CTAButton from "@/components/CTAButton";
@@ -28,29 +29,32 @@ export default function Navbar() {
         }`}
       >
         <div className="mx-auto max-w-7xl px-5 flex items-center justify-between gap-4">
-          <a href="#home" className="flex items-center gap-2 shrink-0">
+          <Link to="/" className="flex items-center gap-2 shrink-0">
             <img src="/edited_logo.png" alt="ExpertAction" className="h-9 w-auto" />
-          </a>
+          </Link>
           <nav className="hidden lg:flex items-center gap-8">
             {NAV.map((n) => (
-              <a
-                key={n.href}
-                href={n.href}
-                className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors relative group"
-              >
-                {n.label}
-                <span className="absolute -bottom-1 left-0 h-px w-0 bg-primary transition-all duration-300 group-hover:w-full" />
-              </a>
+              <Link
+              key={n.href}
+              to={n.href}
+              className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors relative group"
+              activeProps={{
+                className: "text-primary",
+              }}
+            >
+              {n.label}
+              <span className="absolute -bottom-1 left-0 h-px w-0 bg-primary transition-all duration-300 group-hover:w-full" />
+            </Link>
             ))}
           </nav>
           <div className="flex items-center gap-3">
             <CTAButton>
-              <a
-                href={`tel:${PHONE}`}
+              <Link
+                to={`/contact`}
                 className="hidden md:inline-flex items-center gap-2 rounded-full btn-cta px-5 py-2.5 text-sm font-semibold"
               >
                 <Phone className="h-4 w-4" /> Enroll Now
-              </a>
+              </Link>
             </CTAButton>
             <button
               onClick={() => setOpen(true)}
@@ -71,7 +75,7 @@ export default function Navbar() {
         className="fixed inset-0 z-[60] bg-navy-deep/95 backdrop-blur-2xl"
       >
         <div className="flex items-center justify-between px-5 py-5">
-          <a href="#home" className="flex items-center gap-2 shrink-0">
+          <a href="/" className="flex items-center gap-2 shrink-0">
             <img src="/edited_logo.png" alt="ExpertAction" className="h-9 w-auto" />
           </a>
           <button onClick={() => setOpen(false)} className="p-2" aria-label="Close menu">
@@ -80,17 +84,21 @@ export default function Navbar() {
         </div>
         <nav className="flex flex-col items-center justify-center gap-8 pt-16">
           {NAV.map((n, i) => (
-            <motion.a
-              key={n.href}
-              href={n.href}
+            <motion.div
+            key={n.href}
+          >
+            <Link
+              to={n.href}
               onClick={() => setOpen(false)}
-              initial={{ opacity: 0, y: 20 }}
-              animate={open ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-              transition={{ delay: open ? 0.1 + i * 0.06 : 0, duration: 0.4 }}
               className="text-2xl font-display font-bold hover:text-primary transition-colors"
+              activeProps={{
+                className: "text-2xl font-display font-bold text-primary",
+              }}
             >
               {n.label}
-            </motion.a>
+            </Link>
+          </motion.div>
+              
           ))}
           <CTAButton>
             <motion.a
