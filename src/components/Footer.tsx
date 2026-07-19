@@ -3,52 +3,71 @@ import { NAV, PHONE, PHONE_DISPLAY, WHATSAPP } from "@/lib/constants";
 
 export default function Footer() {
   return (
-    <footer className="relative border-t border-white/10 bg-navy-deep px-5 pt-16 pb-8">
-      <div className="mx-auto max-w-7xl">
-        <div className="grid md:grid-cols-3 gap-10">
-          <div>
-            <div className="flex items-center gap-2">
-              <div className="grid h-9 w-9 place-items-center rounded-lg bg-gradient-to-br from-primary to-gold-soft text-primary-foreground font-black">
+    <footer className="relative border-t border-[#DBEAFE] bg-[#F9FAFB] text-[#111827] px-6 pt-10 pb-5">
+      <div className="mx-auto max-w-7xl w-full">
+        {/* Main Grid: Spread evenly across columns */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+          
+          {/* Brand Identity */}
+          <div className="flex flex-col space-y-3">
+            <div className="flex items-center gap-2.5">
+              <div className="grid h-10 w-10 place-items-center rounded-lg bg-[#2563EB] text-white text-lg font-black shadow-sm">
                 E
               </div>
-              <span className="font-display font-extrabold text-lg">
-                Expert<span className="text-primary">Action</span>
-                <sup className="text-[10px] text-primary">®</sup>
+              <span className="font-display font-extrabold text-xl tracking-tight text-[#111827]">
+                Expert<span className="text-[#2563EB]">Action</span>
+                <sup className="text-[11px] font-bold text-[#2563EB] ml-0.5">®</sup>
               </span>
             </div>
-            <p className="mt-4 text-sm text-muted-foreground">Price Action. Precision Execution.</p>
+            <p className="text-[15px] font-medium text-[#111827]/70">
+              Price Action. Precision Execution.
+            </p>
           </div>
-          <div>
-            <div className="text-xs uppercase tracking-widest text-primary font-semibold">Quick Links</div>
-            <ul className="mt-4 space-y-2 text-sm">
+
+          {/* Navigation Links */}
+          <div className="flex flex-col space-y-3">
+            <div className="text-sm uppercase tracking-wider text-[#2563EB] font-bold">
+              Quick Links
+            </div>
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-2 text-[15px]">
               {NAV.map((n) => (
                 <li key={n.href}>
-                  <a href={n.href} className="text-muted-foreground hover:text-primary transition-colors">
+                  <a href={n.href} className="text-[#111827]/70 hover:text-[#2563EB] transition-colors font-semibold block">
                     {n.label}
                   </a>
                 </li>
               ))}
             </ul>
           </div>
-          <div>
-            <div className="text-xs uppercase tracking-widest text-primary font-semibold">Contact</div>
-            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+
+          {/* Contact Methods */}
+          <div className="flex flex-col space-y-3">
+            <div className="text-sm uppercase tracking-wider text-[#2563EB] font-bold">
+              Contact
+            </div>
+            <ul className="space-y-2.5 text-[15px] text-[#111827]/70 font-semibold">
               <li>
-                <a href={`tel:${PHONE}`} className="hover:text-primary">
-                  {PHONE_DISPLAY}
+                <a href={`tel:${PHONE}`} className="hover:text-[#2563EB] transition-colors inline-flex items-center gap-2">
+                  <Phone className="w-4 h-4 text-[#2563EB] shrink-0" /> 
+                  <span>{PHONE_DISPLAY}</span>
                 </a>
               </li>
               <li>
-                <a href={WHATSAPP} className="hover:text-primary" target="_blank" rel="noopener noreferrer">
-                  WhatsApp
+                <a href={WHATSAPP} className="hover:text-[#2563EB] transition-colors inline-flex items-center gap-2" target="_blank" rel="noopener noreferrer">
+                  <MessageCircle className="w-4 h-4 text-[#2563EB] shrink-0" /> 
+                  <span>WhatsApp</span>
                 </a>
               </li>
-              <li>Kharadi, Pune - 411014</li>
+              <li className="text-[#111827]/80 pl-6 relative">
+                <span className="absolute left-0 top-1.5 w-1.5 h-1.5 rounded-full bg-[#93C5FD]" />
+                Kharadi, Pune - 411014
+              </li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-12 rounded-2xl border border-white/10 bg-card/50 p-5 text-[11px] leading-relaxed text-muted-foreground">
+        {/* Disclaimer Box - Made tighter and cleaner */}
+        <div className="mt-8 rounded-xl border border-[#DBEAFE] bg-white px-4 py-3.5 text-[11px] leading-relaxed text-[#111827]/60 shadow-sm">
           ExpertAction® provides educational content for learning purposes only. It does not offer
           guaranteed returns, portfolio management, or investment advisory services. All trading and
           investment decisions should be made at your own discretion after considering your financial
@@ -59,9 +78,10 @@ export default function Footer() {
           decisions.
         </div>
 
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
-          <p>Copyright © 2026 ExpertAction Price Action Trading Academy - All Rights Reserved.</p>
-          <a href="/admin" className="text-muted-foreground/60 hover:text-primary transition-colors">
+        {/* Bottom Utility Row */}
+        <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#111827]/50 border-t border-[#DBEAFE]/60 pt-4">
+          <p className="font-medium">Copyright © 2026 ExpertAction Price Action Trading Academy - All Rights Reserved.</p>
+          <a href="/admin" className="text-[#111827]/40 hover:text-[#2563EB] transition-colors font-semibold">
             Admin Login
           </a>
         </div>

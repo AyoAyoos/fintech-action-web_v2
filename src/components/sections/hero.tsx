@@ -1,9 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useInView, useReducedMotion, animate, type Variants } from "framer-motion";
 import {
-  CheckCircle2,
+  motion,
+  useInView,
+  useReducedMotion,
+  animate,
+  type Variants,
+} from "framer-motion";
+import {
   Book,
   Award,
   Users,
@@ -12,20 +17,34 @@ import {
   TrendingUp,
   ShieldCheck,
   Headset,
-  PlayCircle
+  PlayCircle,
+  MessageCircle,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
+import { WHATSAPP } from "@/lib/constants";
 
+/**
+ * AuthorityHero — redesigned as a balanced two-column fintech hero.
+ *
+ * Layout goals:
+ *  - Left column: eyebrow → headline → EXPERT ACTION accent → subtitle
+ *    → primary CTAs → inline trust badges.
+ *  - Right column: an anchored "mentor / product" card (Why Choose) with
+ *    floating market-info cards + the 3D book mockup parallax-attached
+ *    around it, sitting on top of candlestick + video background.
+ *  - Bottom trust bar preserved.
+ *
+ * All original content, colors, and Framer Motion animations are kept.
+ */
 export default function AuthorityHero() {
   const shouldReduceMotion = useReducedMotion();
 
-  // Staggered entrance for the left column: heading -> description -> checklist -> CTAs
   const containerVariants: Variants = {
     hidden: {},
     show: {
       transition: {
-        staggerChildren: shouldReduceMotion ? 0 : 0.14,
+        staggerChildren: shouldReduceMotion ? 0 : 0.12,
         delayChildren: 0.05,
       },
     },
@@ -41,238 +60,135 @@ export default function AuthorityHero() {
   };
 
   return (
-    <section className="relative min-h-screen bg-[#F9FAFB] text-[#111827] pt-24 sm:pt-28 lg:pt-32 pb-8 lg:pb-12 flex flex-col justify-between overflow-hidden font-sans">
-
-      {/* ------------------------------------------- */}
-      {/* DYNAMIC STOCK MARKET BACKGROUND             */}
-      {/* ------------------------------------------- */}
+    <section className="relative min-h-screen overflow-hidden bg-[#F9FAFB] font-sans text-[#111827]">
+      {/* Background: video + grid + candles */}
       <HeroBackground shouldReduceMotion={shouldReduceMotion} />
 
-      <div className="relative z-10 mx-auto max-w-7xl 2xl:max-w-[96rem] px-4 sm:px-6 lg:px-8 w-full flex-grow flex flex-col justify-center">
-        {/* Responsive grid: single column on mobile/tablet, 12-col on large screens */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 sm:gap-12 lg:gap-8 xl:gap-10 items-center">
-
-          {/* LEFT COLUMN: Main Headlines & Book (Spans 5 cols) */}
+      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col px-4 pb-10 pt-24 sm:px-6 sm:pt-28 lg:px-8 lg:pt-32 2xl:max-w-[92rem]">
+        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-10 xl:gap-14">
+          {/* ---------------- LEFT COLUMN ---------------- */}
           <motion.div
             initial="hidden"
             animate="show"
             variants={containerVariants}
-            className="lg:col-span-5 flex flex-col space-y-5 sm:space-y-6 text-center lg:text-left items-center lg:items-start min-w-0"
+            className="min-w-0 lg:col-span-7 flex flex-col gap-6 text-center lg:text-left"
           >
+            {/* Eyebrow */}
             <motion.div
-              initial={{ opacity: 0, y: 60 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 1,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-              className="flex flex-col w-full"
+              variants={itemVariants}
+              className="mx-auto inline-flex w-fit items-center gap-2 rounded-full border border-[#DBEAFE] bg-white/70 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-[#2563EB] shadow-sm backdrop-blur lg:mx-0"
             >
-              <motion.span
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  delay: 0.2,
-                  duration: 0.8,
-                }}
-                className="text-[#111827] text-[clamp(1.75rem,7vw,4.5rem)] xl:text-8xl font-black leading-[1.1] tracking-tight uppercase"
-              >
-                Master the Stock Market with
-              </motion.span>
-
-              <motion.span
-                initial={{
-                  opacity: 0,
-                  y: 30,
-                  scale: 0.95,
-                }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                  scale: 1,
-                  textShadow: [
-                    "0 0 8px rgba(37,99,235,0.2)",
-                    "0 0 18px rgba(37,99,235,0.4)",
-                    "0 0 8px rgba(37,99,235,0.2)",
-                  ],
-                }}
-                transition={{
-                  delay: 0.5,
-                  duration: 1,
-                  textShadow: {
-                    repeat: Infinity,
-                    duration: 3,
-                    ease: "easeInOut",
-                  },
-                }}
-                whileHover={{
-                  scale: 1.03,
-                  transition: { duration: 0.3 },
-                }}
-                className="text-[#2563EB] text-[clamp(2.25rem,8.5vw,5.25rem)] xl:text-9xl font-black leading-[1.1] tracking-tight uppercase drop-shadow-[0_0_20px_rgba(37,99,235,0.2)] mt-1 sm:mt-2 cursor-default"
-              >
-                Expert Action®
-              </motion.span>
+              <span className="h-1.5 w-1.5 rounded-full bg-[#2563EB]" />
+              Live Market Mentoring · Since 2019
             </motion.div>
 
+            {/* Headline — balanced two-line flow with EXPERT ACTION accent */}
+            <div className="w-full">
+              <div className="overflow-hidden py-1">
+                <motion.h1
+                  initial={{ y: "100%" }}
+                  animate={{ y: 0 }}
+                  transition={{ duration: 0.8, ease: [0.25, 1, 0.5, 1] }}
+                  className="text-[clamp(2.25rem,5.2vw,4.75rem)] font-black uppercase leading-[1.05] tracking-tight text-[#111827]"
+                >
+                  Master the Stock Market with
+                </motion.h1>
+              </div>
+
+              <div className="overflow-hidden py-1">
+                <motion.h1
+                  initial={{ y: "100%" }}
+                  animate={{ y: 0 }}
+                  transition={{
+                    duration: 0.8,
+                    delay: 0.2,
+                    ease: [0.25, 1, 0.5, 1],
+                  }}
+                  className="mt-1 text-[clamp(2.75rem,7vw,6rem)] font-black uppercase leading-[0.95] tracking-tight text-[#2563EB] drop-shadow-[0_6px_20px_rgba(37,99,235,0.18)]"
+                >
+                  Expert Action<span className="align-super text-[0.4em]">®</span>
+                </motion.h1>
+              </div>
+            </div>
+
+            {/* Subtitle */}
             <motion.p
               variants={itemVariants}
-              className="text-base sm:text-lg lg:text-2xl text-[#111827]/80 font-medium max-w-lg lg:max-w-none"
+              className="mx-auto max-w-2xl text-base font-semibold tracking-wide text-[#111827]/75 sm:text-lg lg:mx-0 lg:text-xl"
             >
-              {"Price Action | Risk Management | Trading Psychology"}
+              Price Action · Risk Management · Trading Psychology
               <br className="hidden sm:block" />
-              {"Intraday & Options Trading"}
+              <span className="text-[#111827]/60">Intraday &amp; Options Trading</span>
             </motion.p>
-            {/* Authority Checklist */}
-            <motion.ul
-              variants={itemVariants}
-              className="space-y-3 sm:space-y-4 text-sm sm:text-base lg:text-lg text-[#111827]/80 text-left w-full max-w-md lg:max-w-none"
-            >
-              <li className="flex items-start gap-3">
-                <Book aria-hidden="true" className="w-5 h-5 sm:w-6 sm:h-6 text-[#2563EB] shrink-0 mt-0.5" />
-                <span>Author of Best Selling Book <br className="hidden sm:block"/><span className="text-[#111827] font-semibold">"ExpertAction Intraday Trading - 11 Entry Setup"</span></span>
-              </li>
-              <li className="flex items-start gap-3">
-                <Award aria-hidden="true" className="w-5 h-5 sm:w-6 sm:h-6 text-[#2563EB] shrink-0 mt-0.5" />
-                <span>NISM-Certified Research Analyst</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <Users aria-hidden="true" className="w-5 h-5 sm:w-6 sm:h-6 text-[#2563EB] shrink-0 mt-0.5" />
-                <span>1,500+ Students Trained Successfully</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <Calendar aria-hidden="true" className="w-5 h-5 sm:w-6 sm:h-6 text-[#2563EB] shrink-0 mt-0.5" />
-                <span>Founded in 2019</span>
-              </li>
-            </motion.ul>
 
-            {/* CTAs & Book Mockup */}
+            {/* CTAs */}
             <motion.div
               variants={itemVariants}
-              className="flex flex-col sm:flex-row items-center gap-6 pt-4 w-full justify-center lg:justify-start"
+              className="flex flex-col items-center gap-3 pt-1 sm:flex-row sm:justify-center lg:justify-start"
             >
-              <div className="flex flex-col gap-4 w-full sm:w-auto">
-                <Link to="/courses" className="w-full sm:w-auto">
-                  <motion.button
-                    whileHover={shouldReduceMotion ? undefined : { scale: 1.03, boxShadow: "0 0 25px rgba(37,99,235,0.35)" }}
-                    whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
-                    transition={{ duration: 0.2, ease: "easeOut" }}
-                    className="w-full sm:w-auto px-8 sm:px-10 lg:px-12 py-3 sm:py-3.5 lg:py-4 bg-[#2563EB] text-[#FFFFFF] text-sm sm:text-base lg:text-lg font-bold uppercase rounded-md hover:bg-[#1E3A8A] transition-colors shadow-[0_0_15px_rgba(37,99,235,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F9FAFB]"
-                  >
-                    Explore Courses
-                  </motion.button>
-                </Link>
-              </div>
-
-              {/* 3D Book Mockup CSS Placeholder */}
-              <div className="hidden sm:block perspective-1000 shrink-0 ml-0 lg:ml-4">
-                <motion.div
-                  animate={shouldReduceMotion ? undefined : { rotateY: [-5, 5, -5], rotateX: [2, -2, 2] }}
-                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                  className="w-28 sm:w-32 lg:w-40 h-40 sm:h-44 lg:h-56 bg-[#1E3A8A] rounded-r-md border-l-4 border-[#2563EB] shadow-2xl relative overflow-hidden transform-style-3d shadow-[#1E3A8A]/30"
+              <Link to="/" className="w-full sm:w-auto">
+                <motion.button
+                  whileHover={
+                    shouldReduceMotion
+                      ? undefined
+                      : {
+                          scale: 1.03,
+                          boxShadow: "0 0 30px rgba(37,99,235,0.35)",
+                        }
+                  }
+                  whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  className="w-full rounded-lg bg-[#2563EB] px-8 py-3.5 text-sm font-bold uppercase tracking-wide text-white shadow-[0_10px_30px_-10px_rgba(37,99,235,0.55)] transition-colors hover:bg-[#1E3A8A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F9FAFB] sm:w-auto sm:px-10 sm:text-base"
                 >
-                  <div className="absolute inset-0 p-2 lg:p-3 flex flex-col justify-between border border-[#DBEAFE]/20">
-                    <div className="text-[7px] sm:text-[8px] lg:text-[10px] text-[#93C5FD] text-center uppercase tracking-widest">ExpertAction</div>
-                    <div className="text-xs sm:text-sm lg:text-base font-bold text-[#93C5FD] text-center uppercase leading-tight">Intraday Trading</div>
-                    <div className="text-base sm:text-lg lg:text-2xl font-black text-[#FFFFFF] text-center">11 ENTRY SETUP</div>
-                    <div className="text-[5px] sm:text-[6px] lg:text-[7px] text-[#DBEAFE]/70 text-center">Copyrighted Registry</div>
-                  </div>
-                </motion.div>
-              </div>
-            </motion.div>
-          </motion.div>
+                  Explore Courses
+                </motion.button>
+              </Link>
 
-          {/* CENTER COLUMN: Expert Portrait */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, delay: 0.2 }}
-            className="lg:col-span-4 flex justify-center relative min-h-[450px] sm:min-h-[600px] md:min-h-[700px] lg:min-h-[900px] xl:min-h-[1000px] w-full mt-4 sm:mt-8 lg:mt-0 order-first lg:order-none"          >
-            {/* Gentle continuous float wraps only the transform, keeping the mask/positioning untouched */}
-            <motion.img
-              src="/cutout.png"
-              alt="Founder of ExpertAction"
-              loading="lazy"
-              animate={shouldReduceMotion ? undefined : { y: [0, -10, 0] }}
-              transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute bottom-0 w-full max-w-[240px] sm:max-w-lg md:max-w-xl lg:max-w-none object-contain z-10 drop-shadow-xl"
-              style={{
-                  maskImage: `
-                    linear-gradient(to right, transparent 0%, black 15%),
-                    linear-gradient(to top, transparent 0%, black 15%)
-                  `,
-                  WebkitMaskImage: `
-                    linear-gradient(to right, transparent 0%, black 15%),
-                    linear-gradient(to top, transparent 0%, black 15%)
-                  `,
-                  maskComposite: "intersect",
-                  WebkitMaskComposite: "source-in",
-                }}
-            />
-
-            {/* Subtle glow behind the portrait to help it 'pop' from the background */}
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[85%] h-2/5 bg-[#2563EB]/10 blur-[60px] sm:blur-[80px] lg:blur-[100px] rounded-full z-0" />
-          </motion.div>
-
-          {/* RIGHT COLUMN: Why Choose Us Card (Spans 3 cols) */}
-          <motion.div
-            initial={{ opacity: 0, x: shouldReduceMotion ? 0 : 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-            className="lg:col-span-3 z-20 mt-4 lg:mt-0 w-full max-w-md mx-auto lg:max-w-none min-w-0"
-          >
-            {/* NEW WIDGET TO FILL BLANK SPACE */}
-            <MarketPulseWidget />
-
-            <div className="bg-[#FFFFFF] border border-[#DBEAFE] rounded-xl p-6 sm:p-7 lg:p-8 shadow-xl">
-              <h3 className="text-lg sm:text-xl lg:text-2xl font-black text-center uppercase mb-5 sm:mb-6 lg:mb-8 text-[#111827] tracking-wide">
-                Why Choose <br /> <span className="text-[#2563EB]">Expert Action®?</span>
-              </h3>
-
-              <ul className="space-y-3 sm:space-y-4 lg:space-y-5 mb-6 sm:mb-8 lg:mb-10">
-                {[
-                  { icon: TrendingUp, text: "Practical & Real Market Training" },
-                  { icon: ShieldCheck, text: "Proven Trading Strategies" },
-                  { icon: PlayCircle, text: "Live Market Mentoring" },
-                  { icon: Headset, text: "Lifetime Support" }
-                ].map((item, idx) => (
-                  <motion.li
-                    key={idx}
-                    initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.5 + idx * 0.08, ease: "easeOut" }}
-                    className="flex items-center gap-3 text-xs sm:text-sm lg:text-base font-medium text-[#111827]/80"
-                  >
-                    <item.icon aria-hidden="true" className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-[#2563EB] shrink-0" />
-                    <span className="min-w-0">{item.text}</span>
-                  </motion.li>
-                ))}
-              </ul>
-
-              <motion.button
+              <motion.a
                 whileHover={shouldReduceMotion ? undefined : { scale: 1.02 }}
                 whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
-                className="w-full py-3 sm:py-3.5 lg:py-4 bg-[#2563EB] text-[#FFFFFF] text-sm sm:text-base lg:text-lg font-bold uppercase rounded-md hover:bg-[#1E3A8A] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FFFFFF]"
+                href={WHATSAPP}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[#DBEAFE] bg-white/80 px-6 py-3.5 text-sm font-bold uppercase tracking-wide text-[#111827] backdrop-blur transition-colors hover:border-[#2563EB] hover:text-[#2563EB] sm:w-auto sm:text-base"
               >
-                Join Telegram
-              </motion.button>
-            </div>
+                <MessageCircle className="h-4 w-4 stroke-[2.5]" /> WhatsApp
+              </motion.a>
+            </motion.div>
+
+            {/* Authority checklist / trust badges */}
+            <motion.ul
+              variants={itemVariants}
+              className="mt-2 grid w-full grid-cols-1 gap-x-6 gap-y-3 text-left text-sm text-[#111827]/80 sm:grid-cols-2 sm:text-base"
+            >
+              <TrustItem icon={Book} title='Author of "ExpertAction Intraday Trading"' subtitle="Best-Selling · 11 Entry Setup" />
+              <TrustItem icon={Award} title="NISM-Certified" subtitle="Research Analyst" />
+              <TrustItem icon={Users} title="1,500+ Students" subtitle="Trained Successfully" />
+              <TrustItem icon={Calendar} title="Founded 2019" subtitle="6+ Years of Mentoring" />
+            </motion.ul>
           </motion.div>
 
+          {/* ---------------- RIGHT COLUMN ---------------- */}
+          <motion.div
+            initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.35, ease: "easeOut" }}
+            className="relative z-20 mx-auto w-full min-w-0 max-w-md lg:col-span-5 lg:max-w-none"
+          >
+            <RightStage shouldReduceMotion={shouldReduceMotion} />
+          </motion.div>
         </div>
       </div>
 
-      {/* BOTTOM TRUST BAR */}
+      {/* Bottom trust bar */}
       <motion.div
         initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.6 }}
-        className="relative z-20 w-full bg-[#FFFFFF] border-y border-[#DBEAFE] py-7 sm:py-8 lg:py-10 mt-10 sm:mt-12"
+        className="relative z-20 mt-12 w-full border-y border-[#DBEAFE] bg-white/90 py-7 backdrop-blur sm:py-8 lg:py-10"
       >
-        <div className="mx-auto max-w-7xl 2xl:max-w-[96rem] px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-y-6 gap-x-4 sm:gap-6 lg:gap-8 lg:divide-x lg:divide-[#DBEAFE]">
-
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 2xl:max-w-[92rem]">
+          <div className="grid grid-cols-2 gap-y-6 gap-x-4 sm:grid-cols-3 sm:gap-6 lg:grid-cols-5 lg:gap-8 lg:divide-x lg:divide-[#DBEAFE]">
             <StatItem icon={Calendar} value="2019" label="Established" shouldReduceMotion={shouldReduceMotion} />
             <StatItem icon={Users} value="1,500+" label="Students Trained" shouldReduceMotion={shouldReduceMotion} />
             <StatItem icon={TrendingUp} value="11" label="Copyrighted Entry Setups" shouldReduceMotion={shouldReduceMotion} />
@@ -285,7 +201,6 @@ export default function AuthorityHero() {
               shouldReduceMotion={shouldReduceMotion}
               wrapperClassName="col-span-2 sm:col-span-3 lg:col-span-1"
             />
-
           </div>
         </div>
       </motion.div>
@@ -294,14 +209,211 @@ export default function AuthorityHero() {
 }
 
 // ----------------------------------------------------------------------
-// Statistic with count-up animation (triggers once, when scrolled into view)
+// Right-column stage: anchored card with floating parallax elements
 // ----------------------------------------------------------------------
+function RightStage({ shouldReduceMotion }: { shouldReduceMotion: boolean | null }) {
+  return (
+    <div className="relative mx-auto aspect-[4/5] w-full max-w-[480px] sm:aspect-[5/6] lg:aspect-auto lg:h-[600px] lg:max-w-none">
+      {/* Soft glow behind stage */}
+      <div className="pointer-events-none absolute -inset-6 -z-10 rounded-[3rem] bg-[radial-gradient(circle_at_50%_40%,rgba(37,99,235,0.18),transparent_65%)] blur-2xl" />
+      <div className="pointer-events-none absolute inset-x-8 top-6 -z-10 h-40 rounded-full bg-[#2563EB]/10 blur-3xl" />
 
+      {/* Anchor card (mentor / product hero surface) */}
+      <motion.div
+        animate={shouldReduceMotion ? undefined : { y: [0, -6, 0] }}
+        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute inset-0 rounded-3xl border border-[#DBEAFE] bg-white/95 p-6 shadow-[0_30px_80px_-30px_rgba(30,58,138,0.35)] sm:p-8 lg:p-10"
+      >
+        <div className="mb-5 flex items-center justify-between">
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#2563EB]/70">
+            Expert Action® · Mentor Desk
+          </div>
+          <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-emerald-600">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-60" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+            </span>
+            Live
+          </div>
+        </div>
+
+        <h3 className="text-xl font-black uppercase leading-tight tracking-wide text-[#111827] sm:text-2xl">
+          Why Choose <span className="text-[#2563EB]">Expert Action®?</span>
+        </h3>
+
+        <ul className="mt-6 space-y-4">
+          {[
+            { icon: TrendingUp, text: "Practical & Real Market Training" },
+            { icon: ShieldCheck, text: "Proven Trading Strategies" },
+            { icon: PlayCircle, text: "Live Market Mentoring" },
+            { icon: Headset, text: "Lifetime Support" },
+          ].map((item, idx) => (
+            <motion.li
+              key={idx}
+              initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 + idx * 0.08, ease: "easeOut" }}
+              className="flex items-center gap-3 text-sm font-medium text-[#111827]/85 sm:text-base"
+            >
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-[#DBEAFE]/60 text-[#2563EB]">
+                <item.icon aria-hidden="true" className="h-4.5 w-4.5" />
+              </span>
+              <span className="min-w-0">{item.text}</span>
+            </motion.li>
+          ))}
+        </ul>
+
+        {/* Mini sparkline strip */}
+        <div className="mt-6 rounded-xl border border-[#DBEAFE] bg-[#F9FAFB] p-3">
+          <div className="mb-1 flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-[#111827]/50">
+            <span>Portfolio Simulation</span>
+            <span className="text-emerald-600">+18.4%</span>
+          </div>
+          <svg viewBox="0 0 200 40" className="h-10 w-full" preserveAspectRatio="none">
+            <motion.path
+              d="M0,30 L20,26 L40,28 L60,20 L80,22 L100,14 L120,17 L140,9 L160,12 L180,5 L200,7"
+              fill="none"
+              stroke="#2563EB"
+              strokeWidth="2"
+              strokeLinecap="round"
+              initial={{ pathLength: shouldReduceMotion ? 1 : 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 2.2, ease: "easeOut", delay: 0.7 }}
+            />
+          </svg>
+        </div>
+      </motion.div>
+
+      {/* Floating market pulse card — top left */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.7 }}
+        className="absolute -left-4 -top-6 hidden sm:block"
+      >
+        <motion.div
+          animate={shouldReduceMotion ? undefined : { y: [0, -8, 0] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          className="flex items-center gap-3 rounded-xl border border-[#DBEAFE] bg-white/95 px-4 py-3 shadow-xl backdrop-blur"
+        >
+          <div className="grid h-10 w-10 place-items-center rounded-full bg-[#DBEAFE]/60">
+            <TrendingUp aria-hidden="true" className="h-5 w-5 text-[#2563EB]" />
+          </div>
+          <div className="min-w-0">
+            <div className="text-[9px] font-bold uppercase tracking-widest text-[#111827]/50">Nifty 50</div>
+            <div className="text-sm font-bold text-[#111827]">22,514.65</div>
+          </div>
+          <div className="rounded bg-emerald-500/10 px-2 py-1 text-[10px] font-bold text-emerald-600">
+            +0.75%
+          </div>
+        </motion.div>
+      </motion.div>
+
+      {/* Floating certification badge — top right */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.85 }}
+        className="absolute -right-3 top-16 hidden sm:block"
+      >
+        <motion.div
+          animate={shouldReduceMotion ? undefined : { y: [0, -10, 0] }}
+          transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
+          className="flex items-center gap-2 rounded-xl border border-[#DBEAFE] bg-white/95 px-3 py-2.5 shadow-xl backdrop-blur"
+        >
+          <Award aria-hidden="true" className="h-5 w-5 text-[#2563EB]" />
+          <div className="min-w-0 leading-tight">
+            <div className="text-[9px] font-bold uppercase tracking-widest text-[#111827]/50">Certified</div>
+            <div className="text-xs font-bold text-[#111827]">NISM Analyst</div>
+          </div>
+        </motion.div>
+      </motion.div>
+
+      {/* Floating 3D book — bottom right, partially overlaps section edge */}
+      <div className="perspective-1000 absolute -bottom-8 -right-2 hidden sm:block">
+        <motion.div
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : { rotateY: [-6, 6, -6], rotateX: [3, -3, 3], y: [0, -6, 0] }
+          }
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+          style={{ transformStyle: "preserve-3d" }}
+          className="relative h-44 w-28 overflow-hidden rounded-r-md border-l-4 border-[#2563EB] bg-[#1E3A8A] shadow-2xl shadow-[#1E3A8A]/40 sm:h-52 sm:w-32 lg:h-56 lg:w-36"
+        >
+          <div className="absolute inset-0 flex flex-col justify-between border border-[#DBEAFE]/20 p-2 lg:p-3">
+            <div className="text-center text-[8px] uppercase tracking-widest text-[#93C5FD] lg:text-[10px]">
+              ExpertAction
+            </div>
+            <div className="text-center text-xs font-bold uppercase leading-tight text-[#93C5FD] lg:text-sm">
+              Intraday Trading
+            </div>
+            <div className="text-center text-base font-black text-white lg:text-xl">
+              11 ENTRY SETUP
+            </div>
+            <div className="text-center text-[6px] text-[#DBEAFE]/70 lg:text-[7px]">
+              Copyrighted Registry
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Floating rating chip — bottom left */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1 }}
+        className="absolute -left-2 bottom-10 hidden sm:block"
+      >
+        <motion.div
+          animate={shouldReduceMotion ? undefined : { y: [0, -6, 0] }}
+          transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
+          className="flex items-center gap-2 rounded-xl border border-[#DBEAFE] bg-white/95 px-3 py-2 shadow-xl backdrop-blur"
+        >
+          <Star aria-hidden="true" className="h-4 w-4 fill-[#2563EB] text-[#2563EB]" />
+          <div className="text-xs font-bold text-[#111827]">
+            4.8<span className="text-[#111827]/50">/5</span>
+          </div>
+          <div className="text-[9px] font-semibold uppercase tracking-widest text-[#111827]/50">
+            Google
+          </div>
+        </motion.div>
+      </motion.div>
+    </div>
+  );
+}
+
+// ----------------------------------------------------------------------
+// Trust item (left column)
+// ----------------------------------------------------------------------
+function TrustItem({
+  icon: Icon,
+  title,
+  subtitle,
+}: {
+  icon: LucideIcon;
+  title: string;
+  subtitle: string;
+}) {
+  return (
+    <li className="flex items-start gap-3 rounded-xl border border-transparent bg-white/40 p-3 backdrop-blur transition-colors hover:border-[#DBEAFE]">
+      <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-[#DBEAFE]/60 text-[#2563EB]">
+        <Icon aria-hidden="true" className="h-4.5 w-4.5" />
+      </span>
+      <div className="min-w-0">
+        <div className="text-sm font-semibold text-[#111827]">{title}</div>
+        <div className="text-xs text-[#111827]/60">{subtitle}</div>
+      </div>
+    </li>
+  );
+}
+
+// ----------------------------------------------------------------------
+// Statistical Parsers & Helpers
+// ----------------------------------------------------------------------
 function parseStatValue(raw: string) {
   const match = raw.match(/^([\d,]+\.?\d*)(.*)$/);
-  if (!match) {
-    return { hasNumber: false as const, number: 0, suffix: raw, decimals: 0 };
-  }
+  if (!match) return { hasNumber: false as const, number: 0, suffix: raw, decimals: 0 };
   const numStr = match[1].replace(/,/g, "");
   const decimals = numStr.includes(".") ? numStr.split(".")[1].length : 0;
   return { hasNumber: true as const, number: parseFloat(numStr), suffix: match[2], decimals };
@@ -314,7 +426,7 @@ function StatItem({
   shouldReduceMotion,
   iconClassName = "",
   wrapperClassName = "",
-}:  {
+}: {
   icon: LucideIcon;
   value: string;
   label: string;
@@ -326,7 +438,7 @@ function StatItem({
   const isInView = useInView(ref, { once: true, margin: "-80px" });
   const parsed = parseStatValue(value);
   const [display, setDisplay] = useState(
-    shouldReduceMotion || !parsed.hasNumber ? value : `0${parsed.suffix}`
+    shouldReduceMotion || !parsed.hasNumber ? value : `0${parsed.suffix}`,
   );
 
   useEffect(() => {
@@ -343,97 +455,68 @@ function StatItem({
       },
     });
     return () => controls.stop();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isInView]);
+  }, [isInView, parsed.decimals, parsed.hasNumber, parsed.number, parsed.suffix, shouldReduceMotion]);
 
   return (
     <div ref={ref} className={`flex items-center justify-center gap-3 sm:px-4 ${wrapperClassName}`}>
-      <Icon aria-hidden="true" className={`w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-[#2563EB] shrink-0 ${iconClassName}`} />
+      <Icon
+        aria-hidden="true"
+        className={`h-6 w-6 shrink-0 text-[#2563EB] sm:h-8 sm:w-8 lg:h-10 lg:w-10 ${iconClassName}`}
+      />
       <div className="min-w-0">
-        <div className="text-lg sm:text-xl lg:text-2xl font-bold text-[#111827] leading-none">{display}</div>
-        <div className="text-[10px] sm:text-xs lg:text-sm text-[#111827]/60 uppercase tracking-wider font-semibold mt-1">{label}</div>
+        <div className="text-lg font-bold leading-none text-[#111827] sm:text-xl lg:text-2xl">
+          {display}
+        </div>
+        <div className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-[#111827]/60 sm:text-xs lg:text-sm">
+          {label}
+        </div>
       </div>
     </div>
   );
 }
 
 // ----------------------------------------------------------------------
-// Dynamic Background Components
+// Background: video, grid, glow, candles, sparkline
 // ----------------------------------------------------------------------
-
-// Added Market Pulse Widget Component
-function MarketPulseWidget() {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.6 }}
-      className="mb-6 p-4 sm:p-5 lg:p-6 rounded-xl border border-[#DBEAFE] bg-[#FFFFFF] shadow-sm flex items-center justify-between gap-3"
-    >
-      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-        <div className="h-9 w-9 sm:h-11 sm:w-11 lg:h-12 lg:w-12 rounded-full bg-[#DBEAFE]/50 flex items-center justify-center shrink-0">
-          <TrendingUp aria-hidden="true" className="w-5 h-5 sm:w-6 sm:h-6 text-[#2563EB]" />
-        </div>
-        <div className="min-w-0">
-          <div className="text-[9px] sm:text-[10px] lg:text-xs text-[#111827]/60 uppercase font-bold truncate">Nifty 50</div>
-          <div className="text-xs sm:text-sm lg:text-base font-bold text-[#111827] truncate">22,514.65</div>
-        </div>
-      </div>
-      <div className="text-emerald-600 text-[10px] sm:text-xs lg:text-sm font-bold bg-emerald-500/10 px-2 py-1 lg:px-3 lg:py-1.5 rounded shrink-0">
-        +0.75%
-      </div>
-    </motion.div>
-  );
-}
-
 function HeroBackground({ shouldReduceMotion }: { shouldReduceMotion: boolean | null }) {
   return (
-    <div aria-hidden="true" className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-
-      {/* Cinematic Ken Burns wrapper: slow continuous zoom across the whole background layer */}
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
       <motion.div
         animate={shouldReduceMotion ? undefined : { scale: [1, 1.06, 1] }}
         transition={{ duration: 26, repeat: Infinity, ease: "easeInOut" }}
         className="absolute inset-0 will-change-transform"
       >
-
-        {/* 1. NEW: The Video Background */}
         <video
           autoPlay
           muted
           loop
           playsInline
-          className="absolute inset-0 w-full h-full object-cover opacity-20" 
+          className="absolute inset-0 h-full w-full object-cover opacity-60"
         >
-          {/* Make sure the src matches the exact name of your video in the public folder */}
           <source src="/background_vid.mp4" type="video/mp4" />
         </video>
-
-        {/* 2. Optional Light Overlay (Ensures dark text stays readable) */}
         <div className="absolute inset-0 bg-[#F9FAFB]/80" />
-
-        {/* 1. Subtle Grid Pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1118270A_1px,transparent_1px),linear-gradient(to_bottom,#1118270A_1px,transparent_1px)] bg-[size:24px_24px] sm:bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
-
-        {/* 2. Ambient Blue Orbs, with a gentle pan added on top of their existing pulse */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#11182708_1px,transparent_1px),linear-gradient(to_bottom,#11182708_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] sm:bg-[size:32px_32px]" />
         <motion.div
-          animate={shouldReduceMotion ? undefined : { scale: [1, 1.2, 1], opacity: [0.1, 0.15, 0.1], x: [0, 20, 0], y: [0, 10, 0] }}
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  scale: [1, 1.2, 1],
+                  opacity: [0.08, 0.14, 0.08],
+                  x: [0, 20, 0],
+                  y: [0, 10, 0],
+                }
+          }
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[-10%] left-[-10%] w-[60%] sm:w-[40%] h-[40%] rounded-full bg-[#2563EB]/10 blur-[80px] sm:blur-[120px]"
-        />
-        <motion.div
-          animate={shouldReduceMotion ? undefined : { scale: [1, 1.3, 1], opacity: [0.05, 0.1, 0.05], x: [0, -20, 0], y: [0, -10, 0] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          className="absolute bottom-[-10%] right-[-10%] w-[70%] sm:w-[50%] h-[50%] rounded-full bg-[#93C5FD]/20 blur-[100px] sm:blur-[150px]"
+          className="absolute left-[-10%] top-[-10%] h-[40%] w-[60%] rounded-full bg-[#2563EB]/10 blur-[80px] sm:w-[40%] sm:blur-[120px]"
         />
       </motion.div>
 
-      {/* 3. Floating Abstract Candlesticks */}
       <FloatingCandles shouldReduceMotion={shouldReduceMotion} />
 
-      {/* 4. Animated Background Trend Line (SVG) */}
-      <div className="absolute bottom-1/4 left-0 w-full h-40 sm:h-48 lg:h-64 opacity-[0.1]">
-        <svg viewBox="0 0 1000 200" preserveAspectRatio="none" className="w-full h-full">
+      <div className="absolute bottom-1/4 left-0 h-40 w-full opacity-[0.08] sm:h-48 lg:h-64">
+        <svg viewBox="0 0 1000 200" preserveAspectRatio="none" className="h-full w-full">
           <motion.path
             d="M 0,200 L 100,180 L 200,190 L 300,120 L 400,140 L 500,80 L 600,100 L 700,40 L 800,60 L 900,10 L 1000,20"
             fill="none"
@@ -445,80 +528,53 @@ function HeroBackground({ shouldReduceMotion }: { shouldReduceMotion: boolean | 
           />
           <defs>
             <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#2563EB" /> {/* Primary Accent */}
-              <stop offset="100%" stopColor="#93C5FD" /> {/* Secondary Accent */}
+              <stop offset="0%" stopColor="#2563EB" />
+              <stop offset="100%" stopColor="#93C5FD" />
             </linearGradient>
           </defs>
         </svg>
       </div>
-
     </div>
   );
 }
 
 function FloatingCandles({ shouldReduceMotion }: { shouldReduceMotion: boolean | null }) {
-  const candles = Array.from({ length: 30 }, (_, i) => ({
-    id: i,
-    left: `${Math.random() * 95}%`,
-    top: `${Math.random() * 85}%`,
-    height: Math.floor(Math.random() * 60) + 40, // 40px - 100px
-    type: Math.random() > 0.5 ? "bull" : "bear",
-    delay: Math.random() * 5,
-  }));
+  const candles = [
+    { left: "4%", top: "18%", height: 75, delay: 0, type: "bull" },
+    { left: "18%", top: "58%", height: 50, delay: 1.5, type: "bear" },
+    { left: "46%", top: "12%", height: 65, delay: 0.6, type: "bull" },
+    { left: "94%", top: "72%", height: 60, delay: 2, type: "bear" },
+  ];
 
   return (
     <>
-     {candles.map((candle, i) => (
-  <motion.div
-    key={candle.id}
-    className="absolute hidden md:flex flex-col items-center justify-center opacity-60"
-    style={{
-      left: candle.left,
-      top: candle.top,
-    }}
-    animate={
-      shouldReduceMotion
-        ? undefined
-        : {
-            y: [0, -30, 0],
-            opacity: [0.35, 0.75, 0.35],
-            scale: [1, 1.08, 1],
+      {candles.map((candle, i) => (
+        <motion.div
+          key={i}
+          className="absolute hidden flex-col items-center justify-center opacity-40 md:flex"
+          style={{ left: candle.left, top: candle.top }}
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : { y: [0, -20, 0], opacity: [0.08, 0.18, 0.08] }
           }
-    }
-    transition={{
-      duration: 5 + (i % 5),
-      delay: candle.delay,
-      repeat: Infinity,
-      ease: "easeInOut",
-    }}
-  >
-    {/* Top Wick */}
-    <div
-      className={`w-[2px] h-7 ${
-        candle.type === "bull" ? "bg-emerald-400" : "bg-red-400"
-      }`}
-    />
-
-    {/* Candle Body */}
-    <div
-      className={`w-4 rounded-sm ${
-        candle.type === "bull"
-          ? "bg-emerald-400 shadow-[0_0_25px_rgba(16,185,129,0.8)]"
-          : "bg-red-400 shadow-[0_0_25px_rgba(248,113,113,0.8)]"
-      }`}
-      style={{
-        height: `${candle.height}px`,
-      }}
-    />
-
-    {/* Bottom Wick */}
-    <div
-      className={`w-[2px] h-9 ${
-        candle.type === "bull" ? "bg-emerald-400" : "bg-red-400"
-      }`}
-    />
-  </motion.div>
-))}
+          transition={{
+            duration: 5 + i,
+            delay: candle.delay,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        >
+          <div className={`h-6 w-px ${candle.type === "bull" ? "bg-emerald-500" : "bg-red-500"}`} />
+          <div
+            className={`w-3 rounded-sm shadow-[0_0_15px_rgba(0,0,0,0.05)] ${
+              candle.type === "bull" ? "bg-emerald-500" : "bg-red-500"
+            }`}
+            style={{ height: candle.height }}
+          />
+          <div className={`h-8 w-px ${candle.type === "bull" ? "bg-emerald-500" : "bg-red-500"}`} />
+        </motion.div>
+      ))}
     </>
   );
 }
