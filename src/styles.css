@@ -28,60 +28,55 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-gold: var(--gold);
-  --color-gold-soft: var(--gold-soft);
-  --color-emerald: var(--emerald);
-  --color-emerald-hover: var(--emerald-hover);
   --color-navy: var(--navy);
-  --color-navy-deep: var(--navy-deep);
+  --color-blue: var(--blue);
+  --color-blue-light: var(--blue-light);
+  --color-blue-pale: var(--blue-pale);
   --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Sora", "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
   --radius: 0.75rem;
-  /* Market/trading palette: navy authority, gold wealth, teal growth, crimson risk */
-  --background: #010a16;
-  --foreground: #E6F1FF;
-  --card: #112240;
-  --card-foreground: #E6F1FF;
-  --popover: #112240;
-  --popover-foreground: #E6F1FF;
+  /* Modern SaaS Blue palette — only these 7 colors used throughout */
+  --background: #FFFFFF;
+  --foreground: #111827;
+  --card: #F9FAFB;
+  --card-foreground: #111827;
+  --popover: #FFFFFF;
+  --popover-foreground: #111827;
 
-  /* Primary = Gold accent (wealth, success, highlights, badges, borders) */
-  --primary: #FFB703;
-  --primary-foreground: #0A192F;
+  /* Primary = Primary Accent */
+  --primary: #2563EB;
+  --primary-foreground: #FFFFFF;
 
-  --secondary: #112240;
-  --secondary-foreground: #E6F1FF;
-  --muted: #112240;
-  --muted-foreground: #8B9DC3;
-  --accent: #FFB703;
-  --accent-foreground: #0A192F;
-  --destructive: #E63946;
-  --destructive-foreground: #E6F1FF;
-  --border: rgba(230,241,255,0.10);
-  --input: rgba(230,241,255,0.15);
-  --ring: #FFB703;
+  --secondary: #93C5FD;
+  --secondary-foreground: #111827;
+  --muted: #F9FAFB;
+  --muted-foreground: #111827;
+  --accent: #93C5FD;
+  --accent-foreground: #111827;
+  --destructive: #2563EB;
+  --destructive-foreground: #FFFFFF;
+  --border: #DBEAFE;
+  --input: #DBEAFE;
+  --ring: #2563EB;
 
-  --gold: #FFB703;
-  --gold-soft: #FFCA3A;
-  --emerald:#10B981;
-  --emerald-hover: #22A99C;
-  --navy: #112240;
-  --navy-deep: #0A192F;
+  /* Named palette colors */
+  --navy: #1E3A8A;
+  --blue: #2563EB;
+  --blue-light: #93C5FD;
+  --blue-pale: #DBEAFE;
 
-  --gradient-hero: radial-gradient(ellipse at top, #16294D 0%, #0A192F 60%, #061020 100%);
-  --gradient-gold: linear-gradient(135deg, #FFCA3A, #FFB703);
-  --gradient-emerald: linear-gradient(135deg, #2EC4B6, #22A99C);
-  --shadow-gold: 0 10px 40px -10px rgba(255,183,3,0.35);
-  --shadow-emerald: 0 10px 40px -10px rgba(46,196,182,0.45);
-  --shadow-card: 0 8px 30px -12px rgba(0,0,0,0.5);
+  --gradient-hero: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);
+  --shadow-card: 0 8px 30px -12px rgba(30,58,138,0.15);
 }
 
 .dark {
-  --background: #03080f;
-  --foreground: #E6F1FF;
+  --background: #111827;
+  --foreground: #FFFFFF;
+  --card: #1E3A8A;
+  --card-foreground: #FFFFFF;
 }
 
 @layer base {
@@ -97,7 +92,7 @@
 }
 
 @utility text-gradient-gold {
-  background: var(--gradient-gold);
+  background: var(--gradient-hero);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -108,20 +103,20 @@
 }
 
 @utility btn-cta {
-  background-color: var(--emerald);
-  color: #F1FAEE;
-  box-shadow: var(--shadow-emerald);
+  background-color: var(--blue);
+  color: #FFFFFF;
+  box-shadow: var(--shadow-card);
   transition: background-color 0.25s ease, transform 0.25s cubic-bezier(.2,.8,.2,1), box-shadow 0.3s ease;
-  &:hover { background-color: var(--emerald-hover); transform: scale(1.03); }
+  &:hover { background-color: var(--navy); transform: scale(1.03); }
   &:active { transform: scale(0.98); }
 }
 
 @utility btn-cta-outline {
-  border: 1px solid var(--emerald);
-  color: var(--emerald);
+  border: 1px solid var(--blue);
+  color: var(--blue);
   background-color: transparent;
   transition: background-color 0.25s ease, color 0.25s ease, transform 0.25s cubic-bezier(.2,.8,.2,1);
-  &:hover { background-color: var(--emerald); color: #F1FAEE; transform: scale(1.02); }
+  &:hover { background-color: var(--blue); color: #FFFFFF; transform: scale(1.02); }
 }
 
 @utility card-glow {
@@ -129,19 +124,19 @@
 }
 @utility card-glow-hover {
   transform: translateY(-6px);
-  box-shadow: var(--shadow-gold);
-  border-color: var(--color-gold);
+  box-shadow: var(--shadow-card);
+  border-color: var(--blue);
 }
 
-/* Animated candlestick grid background */
+/* Animated grid background */
 @keyframes grid-drift {
   0% { background-position: 0 0; }
   100% { background-position: 60px 60px; }
 }
 @utility bg-chart-grid {
   background-image:
-    linear-gradient(rgba(230,241,255,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(230,241,255,0.04) 1px, transparent 1px);
+    linear-gradient(rgba(30,58,138,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30,58,138,0.05) 1px, transparent 1px);
   background-size: 60px 60px;
   animation: grid-drift 30s linear infinite;
 }

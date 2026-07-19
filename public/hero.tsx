@@ -36,14 +36,48 @@ export default function AuthorityHero() {
             className="lg:col-span-5 flex flex-col space-y-5 sm:space-y-6 text-center lg:text-left items-center lg:items-start min-w-0"
           >
             <div className="flex flex-col w-full">
-              {/* Fluid, clamped typography prevents overflow at every breakpoint */}
-              <span className="text-white text-[clamp(1.75rem,7vw,4.5rem)] xl:text-7xl font-black leading-[1.1] tracking-tight uppercase">
-                Master the Stock Market with
-              </span>
-              <span className="text-yellow-500 text-[clamp(2.25rem,8.5vw,5.25rem)] xl:text-8xl font-black leading-[1.1] tracking-tight uppercase drop-shadow-[0_0_20px_rgba(234,179,8,0.3)] mt-1 sm:mt-2">
-                Expert Action®
-              </span>
-            </div>
+  {/* Line 1: Fades and slides up smoothly from below */}
+  <motion.span
+    initial={{ opacity: 0, y: 30 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ 
+      duration: 0.8, 
+      ease: [0.16, 1, 0.3, 1] 
+    }}
+    className="text-[#111827] text-[clamp(1.75rem,7vw,4.5rem)] xl:text-7xl font-black leading-[1.1] tracking-tight uppercase"
+  >
+    Master the Stock Market with
+  </motion.span>
+
+  {/* Line 2: Scale-pops into place with an ongoing ambient text shadow pulse */}
+  <motion.span
+    initial={{ opacity: 0, scale: 0.9, y: 20 }}
+    animate={{ 
+      opacity: 1, 
+      scale: 1, 
+      y: 0,
+      textShadow: [
+        "0 0 10px rgba(37,99,235,0.1)",
+        "0 0 25px rgba(37,99,235,0.3)",
+        "0 0 10px rgba(37,99,235,0.1)"
+      ]
+    }}
+    transition={{ 
+      delay: 0.4, // Delays it slightly so it runs after line 1
+      duration: 0.6, 
+      ease: "easeOut",
+      textShadow: {
+        repeat: Infinity,
+        duration: 3,
+        ease: "easeInOut"
+      }
+    }}
+    whileHover={{ scale: 1.02 }}
+    className="text-[#2563EB] text-[clamp(2.25rem,8.5vw,5.25rem)] xl:text-8xl font-black leading-[1.1] tracking-tight uppercase mt-1 sm:mt-2 drop-shadow-[0_0_20px_rgba(37,99,235,0.15)] cursor-default"
+  >
+    Expert Action®
+  </motion.span>
+</div>
 
             <p className="text-base sm:text-lg lg:text-xl text-zinc-300 font-medium max-w-lg lg:max-w-none">
               Price Action | Risk Management | Trading Psychology <br className="hidden sm:block" />
