@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X, Phone } from "lucide-react";
+import { Menu, X, Phone ,MessageCircle} from "lucide-react";
 import CTAButton from "@/components/CTAButton";
-import { NAV, PHONE } from "@/lib/constants";
+import { NAV,PHONE_DISPLAY, PHONE, WHATSAPP } from "@/lib/constants";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -101,17 +101,21 @@ export default function Navbar() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.15, ease: "easeOut" }}
           >
-            <CTAButton>
-              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                <Link
-                  to={`/contact`}
-                  className="hidden md:inline-flex items-center gap-2 rounded-full bg-white text-[#111827] hover:bg-zinc-100 transition-colors px-5 py-1.5 text-xs sm:text-sm font-bold uppercase tracking-wide shadow-sm"
-                >
-                  <Phone className="h-3.5 w-3.5 text-[#2563EB] stroke-[3]" /> Enroll Now
-                </Link>
-              </motion.div>
-            </CTAButton>
+            {/* The fixed button block */}
+            <motion.a
+              href={WHATSAPP}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="hidden md:inline-flex items-center gap-2 rounded-full bg-white text-[#111827] hover:bg-zinc-100 transition-colors px-5 py-1.5 text-xs sm:text-sm font-bold uppercase tracking-wide shadow-sm"
+            >
+              <Phone className="h-3.5 w-3.5 text-[#2563EB] stroke-[3]" /> Enroll Now
+            </motion.a>
             
+            
+
+
             {/* Mobile Hamburger toggle */}
             <motion.button
               onClick={() => setOpen(true)}
@@ -192,19 +196,7 @@ export default function Navbar() {
             </motion.div>
           ))}
         </motion.nav>
-
-        <div className="w-full pb-4">
-          <CTAButton>
-            <motion.a
-              href={`tel:${PHONE}`}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full flex items-center justify-center gap-2 rounded-full bg-white text-[#111827] py-3.5 text-sm font-bold uppercase tracking-wide shadow-md"
-            >
-              <Phone className="h-4 w-4 text-[#2563EB] stroke-[3]" /> Enroll Now
-            </motion.a>
-          </CTAButton>
-        </div>
+        
       </motion.div>
     </>
   );
