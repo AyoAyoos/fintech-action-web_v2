@@ -7,7 +7,6 @@ import { EffectCoverflow } from "swiper/modules";
 import { motion } from "framer-motion";
 
 import Reveal from "@/components/Reveal";
-import CTAButton from "@/components/CTAButton";
 import { PHONE } from "@/lib/constants";
 import { useSettings } from "@/hooks/use-settings";
 
@@ -202,16 +201,14 @@ function CourseCard({ course, index }: { course: any; index: number }) {
 
       <div className="mt-8 w-full">
         {course.popular ? (
-          <CTAButton>
-            <motion.a 
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              href={`tel:${PHONE}`} 
-              className="flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-bold bg-[#2563EB] hover:bg-[#1E3A8A] text-white shadow-md transition-colors w-full uppercase tracking-wider"
-            >
-              <Phone className="h-4 w-4 stroke-[2.5]" /> Call to Enroll
-            </motion.a>
-          </CTAButton>
+          <motion.a 
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            href={`tel:${PHONE}`} 
+            className="flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-bold bg-[#2563EB] hover:bg-[#1E3A8A] text-white shadow-md transition-colors w-full uppercase tracking-wider"
+          >
+            <Phone className="h-4 w-4 stroke-[2.5]" /> Call to Enroll
+          </motion.a>
         ) : (
           <motion.a 
             whileHover={{ scale: 1.02 }}

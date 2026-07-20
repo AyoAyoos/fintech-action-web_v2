@@ -1,48 +1,75 @@
 import { supabase } from "@/integrations/supabase/client";
 
-const BUCKET = "site-images";
+export const BUCKET = "site-images";
 
-// Bucket is private (workspace policy), so we use signed URLs.
-export async function signedUrl(path: string | null | undefined, expiresIn = 60 * 60 * 24 * 7): Promise<string | null> {
+// Get a secure signed or public URL for a storage path
+export async function signedUrl(path: string | null): Promise<string | null> {
   if (!path) return null;
-  const { data } = await supabase.storage.from(BUCKET).createSignedUrl(path, expiresIn);
-  return data?.signedUrl ?? null;
+  if (path.startsWith("http://") || path.startsWith("https://")) {
+    return path;
+  }
+  const { data } = await supabase.storage.from(BUCKET).createSignedUrl(path, 60 * 60 * 24);
+  return data?.signedUrl || null;
 }
 
+// Fetch a single setting value by key
 export async function fetchSetting(key: string): Promise<string | null> {
-  const { data } = await supabase.from("site_settings").select("value").eq("key", key).maybeSingle();
+  const { data, error } = await supabase
+    .from("site_settings")
+    .select("value")
+    .eq("key", key)
+    .single();
+  if (error) return null;
   return data?.value ?? null;
 }
 
+// Fetch a signed URL for a specific site setting (like hero or founder image)
 export async function fetchSettingSignedUrl(key: string): Promise<string | null> {
   const path = await fetchSetting(key);
   return signedUrl(path);
 }
 
+// Fetch all site settings as a key-value map dictionary
 export async function fetchAllSettings(): Promise<Record<string, string>> {
-  const { data } = await supabase.from("site_settings").select("key, value");
-  const out: Record<string, string> = {};
-  for (const row of data ?? []) if (row.value != null) out[row.key] = row.value;
-  return out;
+  const { data, error } = await supabase.from("site_settings").select("key, value");
+  if (error) throw error;
+  const map: Record<string, string> = {};
+  for (const row of data || []) {
+    map[row.key] = row.value ?? "";
+  }
+  return map;
 }
 
-export interface GalleryImage {
-  id: string;
-  image_url: string; // storage path
-  sort_order: number;
-  signedUrl?: string | null;
-}
-
-export async function fetchGallery(): Promise<GalleryImage[]> {
-  const { data } = await supabase
+// Fetch regular gallery images ("Our Research in Pictures")
+export async function fetchGallery() {
+  const { data, error } = await supabase
     .from("gallery_images")
-    .select("id, image_url, sort_order")
+    .select("*")
     .order("sort_order", { ascending: true });
-  if (!data) return [];
-  const withUrls = await Promise.all(
-    data.map(async (g) => ({ ...g, signedUrl: await signedUrl(g.image_url) })),
+  if (error) throw error;
+
+  return Promise.all(
+    (data || []).map(async (img) => {
+      const url = await signedUrl(img.image_url);
+      return { ...img, signedUrl: url };
+    })
   );
-  return withUrls;
 }
 
-export { BUCKET };
+// Fetch showcase gallery images ("A Glimpse Into Our Culture & Classes")
+// Fetch showcase gallery images ("A Glimpse Into Our Culture & Classes")
+export async function fetchShowcaseGallery() {
+  // Use 'as any' to bypass the local TypeScript cache until types are regenerated
+  const { data, error } = await (supabase.from("showcase_gallery_images" as any))
+    .select("*")
+    .order("sort_order", { ascending: true });
+    
+  if (error) throw error;
+
+  return Promise.all(
+    (data || []).map(async (img: any) => {
+      const url = await signedUrl(img.image_url);
+      return { ...img, signedUrl: url };
+    })
+  );
+}

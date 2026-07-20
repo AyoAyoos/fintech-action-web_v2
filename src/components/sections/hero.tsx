@@ -126,7 +126,7 @@ export default function AuthorityHero() {
               variants={itemVariants}
               className="flex flex-col items-center gap-3 pt-1 sm:flex-row sm:justify-center lg:justify-start"
             >
-              <Link to="/" className="w-full sm:w-auto">
+              <Link to="/courses" className="w-full sm:w-auto">
                 <motion.button
                   whileHover={
                     shouldReduceMotion

@@ -1,23 +1,15 @@
-// File: src/components/WhyUs.tsx (or wherever this lives — filename says WhyUs but section id is "showcase")
+// File: src/components/WhyUs.tsx
 "use client";
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, Sparkles, Loader2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import Reveal from "@/components/Reveal";
 import { useSettings } from "@/hooks/use-settings";
+import { fetchShowcaseGallery } from "@/lib/site-queries";
 
-const SHOWCASE_IMAGES = [
-  { src: "/uploads/showcase-1.jpg" },
-  { src: "/uploads/showcase-2.jpg" },
-  { src: "/uploads/showcase-3.jpg" },
-  { src: "/uploads/showcase-4.jpg" },
-  { src: "/uploads/showcase-5.jpg" },
-  { src: "/uploads/showcase-6.jpg" },
-  { src: "/uploads/showcase-7.jpg" },
-];
-
-const AUTOPLAY_MS = 3200;
+const AUTOPLAY_MS = 2000;
 
 export default function WhyUs() {
   const s = useSettings();
@@ -26,6 +18,12 @@ export default function WhyUs() {
   const [paused, setPaused] = useState(false);
   const touchStart = useRef<number | null>(null);
 
+  // Fetch dynamic images from Supabase CMS
+  const { data: showcaseImages = [], isLoading } = useQuery({
+    queryKey: ["showcase-gallery"],
+    queryFn: fetchShowcaseGallery,
+  });
+
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < 1024);
     onResize();
@@ -33,13 +31,17 @@ export default function WhyUs() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  const total = SHOWCASE_IMAGES.length;
-  const next = () => setActive((p) => (p + 1) % total);
-  const prev = () => setActive((p) => (p - 1 + total) % total);
+  const total = showcaseImages.length;
+  const next = () => {
+    if (total === 0) return;
+    setActive((p) => (p + 1) % total);
+  };
+  const prev = () => {
+    if (total === 0) return;
+    setActive((p) => (p - 1 + total) % total);
+  };
 
-  // Autoplay — functional setState means this effect only needs to
-  // re-run when paused/total change, so timing stays exact and doesn't
-  // reset the interval on every unrelated re-render.
+  // Autoplay loop
   useEffect(() => {
     if (paused || total < 2) return;
     const interval = setInterval(() => {
@@ -86,92 +88,103 @@ export default function WhyUs() {
 
         {/* IMAGE SLIDER CONTAINER */}
         <div className="relative w-full">
-          <div
-            className="relative h-[420px] md:h-[460px] flex items-center justify-center [perspective:1400px]"
-            onMouseEnter={() => setPaused(true)}
-            onMouseLeave={() => setPaused(false)}
-            onTouchStart={(e) => { touchStart.current = e.touches[0].clientX; setPaused(true); }}
-            onTouchEnd={(e) => {
-              if (touchStart.current == null) return;
-              const dx = e.changedTouches[0].clientX - touchStart.current;
-              if (Math.abs(dx) > 40) dx < 0 ? next() : prev();
-              touchStart.current = null;
-              setPaused(false);
-            }}
-          >
-            <AnimatePresence initial={false}>
-              {offsets.map((offset) => {
-                const index = (active + offset + total) % total;
-                const item = SHOWCASE_IMAGES[index];
-                const isCenter = offset === 0;
-                const abs = Math.abs(offset);
+          {isLoading ? (
+            <div className="h-[420px] flex items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-[#2563EB]" />
+            </div>
+          ) : total === 0 ? (
+            <div className="h-[200px] flex items-center justify-center text-sm text-gray-500 font-medium">
+              No showcase images uploaded yet. Use the admin panel to add some.
+            </div>
+          ) : (
+            <div
+              className="relative h-[420px] md:h-[460px] flex items-center justify-center [perspective:1400px]"
+              onMouseEnter={() => setPaused(true)}
+              onMouseLeave={() => setPaused(false)}
+              onTouchStart={(e) => { touchStart.current = e.touches[0].clientX; setPaused(true); }}
+              onTouchEnd={(e) => {
+                if (touchStart.current == null) return;
+                const dx = e.changedTouches[0].clientX - touchStart.current;
+                if (Math.abs(dx) > 40) dx < 0 ? next() : prev();
+                touchStart.current = null;
+                setPaused(false);
+              }}
+            >
+              <AnimatePresence initial={false}>
+                {offsets.map((offset) => {
+                  const index = (active + offset + total) % total;
+                  const item = showcaseImages[index];
+                  if (!item) return null;
+                  const isCenter = offset === 0;
+                  const abs = Math.abs(offset);
 
-                const translateX = offset * (isMobile ? 90 : 170);
-                const scale = isCenter ? 1 : 0.78 - abs * 0.05;
-                const rotateY = isCenter ? 0 : offset * -6;
-                const zIndex = 20 - abs;
-                const opacity = abs > range ? 0 : 1 - abs * 0.15;
+                  const translateX = offset * (isMobile ? 90 : 170);
+                  const scale = isCenter ? 1 : 0.78 - abs * 0.05;
+                  const rotateY = isCenter ? 0 : offset * -6;
+                  const zIndex = 20 - abs;
+                  const opacity = abs > range ? 0 : 1 - abs * 0.15;
 
-                return (
-                  <motion.div
-                    key={`slide-${index}`}
-                    onClick={() => {
-                      if (!isCenter) setActive(index);
-                    }}
-                    className={`absolute top-1/2 left-1/2 origin-center ${
-                      isCenter ? "cursor-default" : "cursor-pointer select-none"
-                    }`}
-                    initial={false}
-                    animate={{
-                      x: `calc(-50% + ${translateX}px)`,
-                      y: "-50%",
-                      scale,
-                      rotateY,
-                      opacity,
-                      zIndex,
-                    }}
-                    transition={{ type: "spring", stiffness: 210, damping: 26, mass: 0.9 }}
-                    style={{ transformStyle: "preserve-3d" }}
-                  >
-                    <div
-                      className={`relative overflow-hidden rounded-3xl bg-white transition-[width,height,box-shadow] duration-500 ease-out ${
-                        isCenter
-                          ? "w-[340px] md:w-[520px] h-[400px] md:h-[440px] shadow-[0_30px_60px_-15px_rgba(17,24,39,0.35),0_10px_25px_-10px_rgba(17,24,39,0.25)]"
-                          : "w-[110px] md:w-[150px] h-[340px] md:h-[380px] shadow-[0_12px_30px_-10px_rgba(17,24,39,0.18)] opacity-60 hover:opacity-90"
+                  return (
+                    <motion.div
+                      key={`slide-${index}`}
+                      onClick={() => {
+                        if (!isCenter) setActive(index);
+                      }}
+                      className={`absolute top-1/2 left-1/2 origin-center ${
+                        isCenter ? "cursor-default" : "cursor-pointer select-none"
                       }`}
+                      initial={false}
+                      animate={{
+                        x: `calc(-50% + ${translateX}px)`,
+                        y: "-50%",
+                        scale,
+                        rotateY,
+                        opacity,
+                        zIndex,
+                      }}
+                      transition={{ type: "spring", stiffness: 210, damping: 26, mass: 0.9 }}
+                      style={{ transformStyle: "preserve-3d" }}
                     >
-                      <img
-                        src={item.src}
-                        alt=""
-                        loading="lazy"
-                        className="absolute inset-0 h-full w-full object-cover pointer-events-none"
-                      />
+                      <div
+                        className={`relative overflow-hidden rounded-3xl bg-white transition-[width,height,box-shadow] duration-500 ease-out ${
+                          isCenter
+                            ? "w-[340px] md:w-[520px] h-[400px] md:h-[440px] shadow-[0_30px_60px_-15px_rgba(17,24,39,0.35),0_10px_25px_-10px_rgba(17,24,39,0.25)]"
+                            : "w-[110px] md:w-[150px] h-[340px] md:h-[380px] shadow-[0_12px_30px_-10px_rgba(17,24,39,0.18)] opacity-60 hover:opacity-90"
+                        }`}
+                      >
+                        <img
+                          src={item.signedUrl}
+                          alt="Showcase item"
+                          loading="lazy"
+                          className="absolute inset-0 h-full w-full object-cover pointer-events-none"
+                        />
 
-                      {!isCenter && (
-                        <div className="absolute inset-0 bg-[#111827]/40 backdrop-blur-[0.5px] transition-colors hover:bg-[#111827]/20" />
-                      )}
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
+                        {!isCenter && (
+                          <div className="absolute inset-0 bg-[#111827]/40 backdrop-blur-[0.5px] transition-colors hover:bg-[#111827]/20" />
+                        )}
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
 
-            {/* Previous / Next Buttons */}
-            <button
-              onClick={prev}
-              aria-label="Previous image"
-              className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-30 grid h-11 w-11 md:h-12 md:w-12 place-items-center rounded-full bg-white text-[#2563EB] border border-[#DBEAFE] hover:bg-[#2563EB] hover:text-white transition-all shadow-xl active:scale-95"
-            >
-              <ChevronLeft className="h-5 w-5 stroke-[2.5]" />
-            </button>
-            <button
-              onClick={next}
-              aria-label="Next image"
-              className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-30 grid h-11 w-11 md:h-12 md:w-12 place-items-center rounded-full bg-white text-[#2563EB] border border-[#DBEAFE] hover:bg-[#2563EB] hover:text-white transition-all shadow-xl active:scale-95"
-            >
-              <ChevronRight className="h-5 w-5 stroke-[2.5]" />
-            </button>
-          </div>
+              {/* Previous / Next Buttons */}
+              <button
+                onClick={prev}
+                aria-label="Previous image"
+                className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-30 grid h-11 w-11 md:h-12 md:w-12 place-items-center rounded-full bg-white text-[#2563EB] border border-[#DBEAFE] hover:bg-[#2563EB] hover:text-white transition-all shadow-xl active:scale-95"
+              >
+                <ChevronLeft className="h-5 w-5 stroke-[2.5]" />
+              </button>
+              <button
+                onClick={next}
+                aria-label="Next image"
+                className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-30 grid h-11 w-11 md:h-12 md:w-12 place-items-center rounded-full bg-white text-[#2563EB] border border-[#DBEAFE] hover:bg-[#2563EB] hover:text-white transition-all shadow-xl active:scale-95"
+              >
+                <ChevronRight className="h-5 w-5 stroke-[2.5]" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </section>
